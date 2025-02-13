@@ -1,16 +1,26 @@
-import { Github, Google } from "lucide-react";
+import { FaGithub } from "react-icons/fa";
+import { FcGoogle } from "react-icons/fc";
+import { Button } from "@/components/ui/button";
 
-const SocialAuth = () => {
+export const Social = () => {
   return (
-    <div className="flex justify-center space-x-4">
-      <button className="bg-blue-500 text-white px-4 py-2 rounded-lg">
-        <Google className="size-6" />
-      </button>
-      <button className="bg-blue-500 text-white px-4 py-2 rounded-lg">
-        <Github className="size-6" />
-      </button>
+    <div className="flex justify-center space-x-4 w-full">
+      <Button
+        variant={"default"}
+        onClick={() => {}}
+        size={"lg"}
+        className="rounded-sm w-full"
+      >
+        <FcGoogle className="size-6" />
+      </Button>
+      <Button
+        variant={"default"}
+        size={"lg"}
+        onClick={() => {}}
+        className="rounded-sm w-full"
+      >
+        <FaGithub className="size-6" />
+      </Button>
     </div>
   );
 };
-
-export default SocialAuth;

@@ -1,17 +1,20 @@
+"use client";
 import {
   Card,
   CardContent,
   CardHeader,
   CardFooter,
 } from "@/components/ui/card";
-import Header from "@/components/auth/header";
+import { Header } from "@/components/auth/header";
+import { Social } from "@/components/auth/socail";
+import { BackButton } from "@/components/auth/backButton";
 
 interface CardWrapperProps {
   children: React.ReactNode;
   headerLabel: string;
   backButtonLabel: string;
   backButtonHref: string;
-  footerLabel: string;
+  showSocial: boolean;
 }
 
 export default function CardWrapper({
@@ -19,17 +22,21 @@ export default function CardWrapper({
   headerLabel,
   backButtonLabel,
   backButtonHref,
-  footerLabel,
+  showSocial,
 }: CardWrapperProps) {
   return (
     <Card>
       <CardHeader>
-        <h1>AUTH</h1>
         <Header Label={headerLabel} />
       </CardHeader>
       <CardContent>{children}</CardContent>
+      {showSocial && (
+        <CardFooter>
+          <Social />
+        </CardFooter>
+      )}
       <CardFooter>
-        <p>{footerLabel}</p>
+        <BackButton label={backButtonLabel} href={backButtonHref} />
       </CardFooter>
     </Card>
   );

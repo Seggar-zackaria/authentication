@@ -10,12 +10,12 @@ const poppins = Poppins({
 interface HeaderProps {
   Label: string;
 }
-const Header: FC<HeaderProps> = ({ Label }) => {
+export const Header: FC<HeaderProps> = ({ Label }) => {
   return (
-    <span className={cn(`text-sm text-center ${poppins.className}`)}>
-      {Label}
-    </span>
+    <div className={cn(`text-sm text-center ${poppins.className}`)}>
+      <h1 className="text-3xl font-semibold">AUTH</h1>
+
+      <p>{Label}</p>
+    </div>
   );
 };
-
-export default Header;
