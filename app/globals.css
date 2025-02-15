@@ -6,4 +6,9 @@ html,
 body,
 :root {
   height: 100%;
+  --destructive: #e11d48; /* light mode */
+}
+
+.dark {
+  --destructive: #f87171; /* dark mode */
 }

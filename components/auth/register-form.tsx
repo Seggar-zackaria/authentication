@@ -2,7 +2,7 @@
 import CardWrapper from "@/components/auth/card-wrapper";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { LoginSchema } from "@/schemas/index";
+import { RegisterSchema } from "@/schemas/index";
 import { Input } from "@/components/ui/input";
 import {
   Form,
@@ -15,26 +15,30 @@ import {
 import { Button } from "@/components/ui/button";
 import { FormError } from "@/components/form-error";
 import { FormSucces } from "@/components/form-succes";
-import { Login } from "@/actions/login";
+import { Register } from "@/actions/register";
 import { useState, useTransition } from "react";
-const LoginForm = () => {
+
+// 1:36:00
+
+const RegisterForm = () => {
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | undefined>("");
   const [success, setSuccess] = useState<string | undefined>("");
 
-  const form = useForm<z.infer<typeof LoginSchema>>({
-    resolver: zodResolver(LoginSchema),
+  const form = useForm<z.infer<typeof RegisterSchema>>({
+    resolver: zodResolver(RegisterSchema),
     defaultValues: {
       email: "",
       password: "",
+      name: "",
     },
   });
-  const onSubmit = (values: z.infer<typeof LoginSchema>) => {
+  const onSubmit = (values: z.infer<typeof RegisterSchema>) => {
     setError("");
     setSuccess("");
 
     startTransition(() => {
-      Login(values).then((data) => {
+      Register(values).then((data) => {
         setError(data.error);
         setSuccess(data.success);
       });
@@ -42,62 +46,80 @@ const LoginForm = () => {
   };
   return (
     <CardWrapper
-      headerLabel="welcome back"
-      backButtonLabel="Don't have an account ?"
-      backButtonHref="/auth/register"
+      headerLabel="Create an account"
+      backButtonLabel="Already have an account?"
+      backButtonHref="/auth/login"
       showSocial
     >
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
           <FormField
             control={form.control}
-            name="email"
+            name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>email</FormLabel>
+                <FormLabel>Nom</FormLabel>
                 <FormControl>
                   <Input
                     {...field}
                     disabled={isPending}
-                    placeholder="example@ex.com"
-                    className=" placeholder:text-neutral-400"
+                    placeholder="your name"
                   />
                 </FormControl>
-
                 <FormMessage />
               </FormItem>
             )}
           />
+
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email</FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    type="email"
+                    disabled={isPending}
+                    placeholder="your email"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
           <FormField
             control={form.control}
             name="password"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>password</FormLabel>
+                <FormLabel>Mot de passe</FormLabel>
                 <FormControl>
                   <Input
                     {...field}
-                    disabled={isPending}
-                    placeholder="********"
                     type="password"
-                    className=" placeholder:text-neutral-400"
+                    disabled={isPending}
+                    placeholder="*******"
                   />
                 </FormControl>
-
                 <FormMessage />
               </FormItem>
             )}
           />
-          <FormError message={error || ""} description={error} />
-          <FormSucces message={success || ""} description={success} />
+
+          {error && <FormError message={"error"} description={error} />}
+          {success && <FormSucces message={"success"} description={success} />}
+
           <Button
-            variant={"default"}
-            size={"lg"}
+            variant="default"
+            size="lg"
             disabled={isPending}
             type="submit"
-            className="w-full disabled:cursor-not-allowed"
+            className="w-full"
           >
-            submit
+            register
           </Button>
         </form>
       </Form>
@@ -105,4 +127,4 @@ const LoginForm = () => {
   );
 };
 
-export default LoginForm;
+export default RegisterForm;
