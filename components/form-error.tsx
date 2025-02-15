@@ -1,19 +1,17 @@
 import { GoAlertFill } from "react-icons/go";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Alert, AlertTitle } from "@/components/ui/alert";
 
 interface FormErrorProps {
-  message: string;
-  description?: string;
+  message: string | undefined;
 }
 
-export function FormError({ message, description }: FormErrorProps) {
+export function FormError({ message }: FormErrorProps) {
+  if (!message) return null;
+
   return (
     <Alert variant="destructive">
       <GoAlertFill className="h-4 w-4" />
       <AlertTitle>{message}</AlertTitle>
-      <AlertDescription>
-        {description || "Something went wrong. Please try again."}
-      </AlertDescription>
     </Alert>
   );
 }

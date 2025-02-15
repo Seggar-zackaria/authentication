@@ -88,8 +88,8 @@ const LoginForm = () => {
               </FormItem>
             )}
           />
-          <FormError message={error || ""} description={error} />
-          <FormSucces message={success || ""} description={success} />
+          <FormError message={error} />
+          <FormSucces message={success} />
           <Button
             variant={"default"}
             size={"lg"}
