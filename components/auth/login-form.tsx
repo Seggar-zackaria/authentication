@@ -14,9 +14,10 @@ import {
 } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { FormError } from "@/components/form-error";
-import { FormSucces } from "@/components/form-succes";
+import { FormSuccess } from "@/components/form-succes";
 import { Login } from "@/actions/login";
 import { useState, useTransition } from "react";
+
 const LoginForm = () => {
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | undefined>("");
@@ -35,8 +36,12 @@ const LoginForm = () => {
 
     startTransition(() => {
       Login(values).then((data) => {
-        setError(data.error);
-        setSuccess(data.success);
+        if (data.error) {
+          setError(data.error);
+        }
+        if (data.success) {
+          setSuccess(data.success);
+        }
       });
     });
   };
@@ -88,10 +93,10 @@ const LoginForm = () => {
               </FormItem>
             )}
           />
-          <FormError message={error} />
-          <FormSucces message={success} />
+          {error && <FormError message={error} />}
+          {success && <FormSuccess message={success} />}
           <Button
-            variant={"default"}
+            variant="default"
             size={"lg"}
             disabled={isPending}
             type="submit"

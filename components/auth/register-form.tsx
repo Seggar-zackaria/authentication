@@ -39,8 +39,13 @@ const RegisterForm = () => {
 
     startTransition(() => {
       Register(values).then((data) => {
-        setError(data.error);
-        setSuccess(data.success);
+        if (data.error) {
+          setError(data.error);
+          console.log(data.error);
+        }
+        if (data.success) {
+          setSuccess(data.success);
+        }
       });
     });
   };
@@ -49,7 +54,7 @@ const RegisterForm = () => {
       headerLabel="Create an account"
       backButtonLabel="Already have an account?"
       backButtonHref="/auth/login"
-      showSocial
+      showSocial={false}
     >
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -58,7 +63,7 @@ const RegisterForm = () => {
             name="name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Nom</FormLabel>
+                <FormLabel>Name</FormLabel>
                 <FormControl>
                   <Input
                     {...field}
@@ -109,8 +114,8 @@ const RegisterForm = () => {
             )}
           />
 
-          {error && <FormError message={"error"} description={error} />}
-          {success && <FormSucces message={"success"} description={success} />}
+          <FormError message={error} />
+          <FormSucces message={success} />
 
           <Button
             variant="default"

@@ -1,17 +1,44 @@
 import { auth } from "@/auth";
+import authConfig from "@/auth.config";
+import NextAuth from "next-auth";
+import {
+  apiAuthPrefix,
+  authRoutes,
+  publicRoutes,
+  DEFAULT_LOGIN_REDIRECT,
+} from "@/routes";
+import { NextResponse } from "next/server";
 
-// export { auth as middleware } from "@/auth";
+const {} = NextAuth(authConfig);
 
 export default auth((req) => {
-  console.log("ROUTE: ", req.nextUrl.pathname);
+  const isLoggedIn = !!req.auth;
+  const { nextUrl } = req;
+
+  const isApiAuth = nextUrl.pathname.startsWith(apiAuthPrefix);
+  const isPublicRoute = publicRoutes.includes(nextUrl.pathname);
+  const isAuthRoute = authRoutes.includes(nextUrl.pathname);
+
+  if (isApiAuth) {
+    return null;
+  }
+
+  if (isAuthRoute) {
+    if (isLoggedIn) {
+      return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl));
+    }
+    return null;
+  }
+
+  if (!isLoggedIn && !isPublicRoute) {
+    return Response.redirect(new URL("/auth/login", nextUrl));
+  }
+
+  return null;
 });
-// 2:15
 
 export const config = {
   matcher: [
-    // Skip Next.js internals and all static files, unless found in search params
     "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
-    // Always run for API routes
-    "/(api|trpc)(.*)",
   ],
 };

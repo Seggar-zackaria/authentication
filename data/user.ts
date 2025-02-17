@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 
-export const getUserByEmail = async (email: string) => {
+const getUserByEmail = async (email: string) => {
   try {
     return await db.user.findUnique({
       where: { email },
@@ -10,7 +10,7 @@ export const getUserByEmail = async (email: string) => {
   }
 };
 
-export const getUserById = async (id: number) => {
+const getUserById = async (id: string) => {
   try {
     return await db.user.findUnique({
       where: { id },
@@ -19,3 +19,10 @@ export const getUserById = async (id: number) => {
     return { error: "User not found" };
   }
 };
+
+// const saltAndHashPassword = async (password: string) => {
+//   const hashPwd = await bcrypt.compare(password, password);
+//   return hashPwd;
+// };
+
+export { getUserByEmail, getUserById };

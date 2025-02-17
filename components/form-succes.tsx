@@ -1,11 +1,11 @@
 import { FaCheckCircle } from "react-icons/fa";
 import { Alert, AlertTitle } from "@/components/ui/alert";
 
-interface FormSuccesProps {
+interface FormSuccessProps {
   message: string | undefined;
 }
 
-export function FormSucces({ message }: FormSuccesProps) {
+export function FormSuccess({ message }: FormSuccessProps) {
   if (!message) return null;
 
   return (
