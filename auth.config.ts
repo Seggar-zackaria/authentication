@@ -1,42 +1,51 @@
 import Credentials from "next-auth/providers/credentials";
 import { LoginSchema } from "@/schemas";
 import type { NextAuthConfig } from "next-auth";
-import { getUserByEmail } from "@/data/user";
+import { getUserByEmail, getUserById } from "@/data/user";
 import bcrypt from "bcryptjs";
-import { db } from "@/lib/db";
+import { DEFAULT_LOGIN_REDIRECT } from "./routes";
 
-const authConfig: NextAuthConfig = {
+export const authConfig = {
+  pages: {
+    signIn: "/auth/login",
+  },
+
   providers: [
     Credentials({
       credentials: {
-        email: {},
-        password: {},
+        email: { label: "Email", type: "text" },
+        password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
+        // Validate form fields
         const validateFields = LoginSchema.safeParse(credentials);
-        if (validateFields.success) {
-          const { email, password } = validateFields.data;
-
-          const existingUser = await db.user.findUnique({
-            where: { email },
-          });
-
-          if (!existingUser || !existingUser.password) return null;
-
-          const passwordMatch = await bcrypt.compare(
-            password,
-            existingUser.password
-          );
-
-          console.log("Password match result:", passwordMatch); // Debugging 6: Password comparison
-
-          if (passwordMatch) return existingUser;
+        if (!validateFields.success) {
+          throw new Error("Invalid input");
         }
 
-        return null;
+        const { email, password } = validateFields.data;
+
+        const existingUser = await getUserByEmail(email);
+
+        if (!existingUser || !existingUser.password) {
+          throw new Error("Invalid email or password");
+        }
+
+        const passwordMatch = await bcrypt.compare(
+          password,
+          existingUser.password
+        );
+        if (!passwordMatch) {
+          throw new Error("Invalid email or password");
+        }
+
+        return {
+          id: existingUser.id,
+          email: existingUser.email,
+          name: existingUser.name,
+          image: existingUser.image,
+        };
       },
     }),
   ],
-};
-
-export default authConfig;
+} satisfies NextAuthConfig;

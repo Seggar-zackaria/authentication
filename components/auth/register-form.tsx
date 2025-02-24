@@ -14,13 +14,15 @@ import {
 } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import { FormError } from "@/components/form-error";
-import { FormSucces } from "@/components/form-succes";
+import { FormSuccess } from "@/components/form-succes";
 import { Register } from "@/actions/register";
 import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 
 // 1:36:00
 
 const RegisterForm = () => {
+  const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | undefined>("");
   const [success, setSuccess] = useState<string | undefined>("");
@@ -41,10 +43,10 @@ const RegisterForm = () => {
       Register(values).then((data) => {
         if (data.error) {
           setError(data.error);
-          console.log(data.error);
         }
         if (data.success) {
           setSuccess(data.success);
+          router.push("/auth/login");
         }
       });
     });
@@ -115,7 +117,7 @@ const RegisterForm = () => {
           />
 
           <FormError message={error} />
-          <FormSucces message={success} />
+          <FormSuccess message={success} />
 
           <Button
             variant="default"
