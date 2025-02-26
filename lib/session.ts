@@ -2,6 +2,7 @@
 
 import { signOut } from "next-auth/react";
 
-export async function LogOutSession(provider: string) Promise<String> | null {
-  await signOut({ redirectTo: "/auth/login" });
+export async function LogOutSession(provider: string): Promise<string | void> {
+  await signOut();
+  return ;
 }

@@ -1,16 +1,17 @@
-"use server";
+"use client";
+
 import { LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { LogOutSession } from "@/lib/session";
-import { Form } from "../ui/form";
+import { signOut } from "next-auth/react";
 
-export const SignOutButton = async () => {
+export const SignOutButton = () => {
   return (
-    <Form>
-      <Button variant={"default"} size={"lg"} type="submit">
-        Log Out
-        <LogOut />
-      </Button>
-    </Form>
+    <Button 
+      size="lg" 
+      onClick={() => signOut({ callbackUrl: "/auth/login" })}
+    >
+      Log Out
+      <LogOut />
+    </Button>
   );
 };

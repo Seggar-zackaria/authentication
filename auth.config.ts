@@ -1,16 +1,20 @@
 import Credentials from "next-auth/providers/credentials";
 import { LoginSchema } from "@/schemas";
 import type { NextAuthConfig } from "next-auth";
-import { getUserByEmail, getUserById } from "@/data/user";
+import { getUserByEmail } from "@/data/user";
 import bcrypt from "bcryptjs";
-import { DEFAULT_LOGIN_REDIRECT } from "./routes";
-
+import Google from "next-auth/providers/google"
+import Github from "next-auth/providers/github"
 export const authConfig = {
   pages: {
     signIn: "/auth/login",
   },
 
   providers: [
+    Google({
+      clientId: process.env.AUTH_GOOGLE_ID as string,
+      clientSecret: process.env.AUTH_GOOGLE_SECRET as string,
+    }),
     Credentials({
       credentials: {
         email: { label: "Email", type: "text" },
@@ -48,4 +52,6 @@ export const authConfig = {
       },
     }),
   ],
+  secret: process.env.NEXTAUTH_SECRET,
+
 } satisfies NextAuthConfig;

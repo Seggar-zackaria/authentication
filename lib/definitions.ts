@@ -6,7 +6,7 @@ export type User = {
   role?: string | null;
   emailVerified?: Date | null;
   image?: string | null;
-  accounts?: Account[];
+  accounts?: Account[] | null;
   createdAt: Date;
   updatedAt: Date;
 };

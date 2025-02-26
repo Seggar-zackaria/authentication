@@ -115,7 +115,7 @@ const LoginForm = () => {
           <Button
             variant="default"
             size="lg"
-            aria-disabled={isPending}
+            disabled={isPending}
             type="submit"
             className="w-full disabled:cursor-not-allowed"
           >

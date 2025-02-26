@@ -4,7 +4,8 @@ import { User } from "@/lib/definitions";
 const getUserByEmail = async (email: string): Promise<User | undefined> => {
   const user = await db.user.findUnique({
     where: { email },
-  });
+    include: {} 
+   });
 
   if (!user) return undefined;
 

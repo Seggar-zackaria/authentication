@@ -9,28 +9,40 @@ import { UserRole } from "@prisma/client";
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(db),
   session: { strategy: "jwt" },
-  secret: process.env.NEXTAUTH_SECRET,
   ...authConfig,
-  callbacks: {
-    async signIn({ user }) {
-      const existingUser = await getUserById(user.id);
-
-      // Prevent sign in if user doesn't exist or email isn't verified
-      if (!existingUser?.emailVerified) {
-        return false;
-      }
-
-      return true;
+  events: {
+    async linkAccount({ user }) {
+      await db.user.update({
+        where: { id: user.id },
+        data: { emailVerified: new Date() },
+      });
     },
+  },
+  callbacks: {
+    // async signIn({ user }) {
+    //   if (!user.id) return false;
+    //   const existingUser = await getUserById(user.id);
+
+    //   // Prevent sign in if user doesn't exist or email isn't verified
+    //   if (!existingUser || !existingUser.emailVerified) {
+    //     return false;
+    //   }
+
+    //   return true;
+    // },
     authorized({ auth, request: { nextUrl } }) {
-      const isLoggedIn: boolean = !!auth?.user;
+      const isLoggedIn = !!auth?.user;
       const isOnDashboard: boolean = nextUrl.pathname.startsWith(
         DEFAULT_LOGIN_REDIRECT
       );
-     if (isOnDashboard) return isLoggedIn;
-      if (isLoggedIn) return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl));
-      return true;
+      if (isOnDashboard) {
+        if(isLoggedIn) {
+          return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl))
+        }
+        return false
+      }
     },
+    
     async session({ session, token }) {
       if (token.sub && session.user ) {
         session.user.id = token.sub;
