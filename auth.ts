@@ -19,17 +19,18 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     },
   },
   callbacks: {
-    // async signIn({ user }) {
-    //   if (!user.id) return false;
-    //   const existingUser = await getUserById(user.id);
+    async signIn({ user, account }) {
+      if (account?.provider !== "credentials") return false;
+      if (!user.id) return false;
+      const existingUser = await getUserById(user.id);
 
-    //   // Prevent sign in if user doesn't exist or email isn't verified
-    //   if (!existingUser || !existingUser.emailVerified) {
-    //     return false;
-    //   }
+      // Prevent sign in if user doesn't exist or email isn't verified
+      if (!existingUser?.emailVerified) {
+        return false;
+      }
 
-    //   return true;
-    // },
+      return true;
+    },
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user;
       const isOnDashboard: boolean = nextUrl.pathname.startsWith(

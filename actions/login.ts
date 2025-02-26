@@ -1,41 +1,13 @@
 "use server";
 
-// import { AuthError } from "next-auth";
-
-// import { signIn } from "next-auth/react";
-// import { DEFAULT_LOGIN_REDIRECT } from "@/routes";
-
-// export const Login = async (values: z.infer<typeof LoginSchema>) => {
-//   const validateFields = LoginSchema.safeParse(values);
-
-//   if (!validateFields) {
-//     return { error: "Invalid fields!" };
-//   }
-
-//   try {
-//     await signIn("credentials", {
-//       email: validateFields.data?.email,
-//       password: validateFields.data?.password,
-//       redirect: false,
-//       redirectTo: DEFAULT_LOGIN_REDIRECT,
-//     });
-//   } catch (error) {
-//     if (error instanceof AuthError) {
-//       switch (error.type) {
-//         case "CredentialsSignin":
-//           return { error: "Invalid credentials" };
-//         default:
-//           return { error: "Something went wrong!" };
-//       }
-//     }
-//   }
-// };
-
 import * as z from "zod";
 import { LoginSchema } from "@/schemas";
 import { signIn } from "@/auth";
 import { AuthError } from "next-auth";
 import { DEFAULT_LOGIN_REDIRECT } from "@/routes";
+import { getUserByEmail } from "@/data/user";
+import { generateToken } from "@/lib/tokens";
+import { sendVerificationEmail } from "@/app/api/send/route";
 
 interface LoginProps {
   values: z.infer<typeof LoginSchema>;
@@ -50,6 +22,23 @@ export async function Login({
   formData,
 }: LoginProps): Promise<LoginResponse> {
   const validateFields = LoginSchema.safeParse(values);
+
+
+  if (!validateFields.success) {
+    return { error: "Invalid fields" };
+  }
+  const existingUser = await getUserByEmail(validateFields.data.email);
+
+  if (!existingUser || !existingUser.email || !existingUser.password) {
+    return { error: "Email does not exist" };
+  }
+
+  if(!existingUser.emailVerified){
+    const verificationToken = await generateToken(existingUser.email);
+
+    await sendVerificationEmail(verificationToken.identifier, verificationToken.token);
+    return { success: "Confirmation email sent" }
+  }
 
   try {
     await signIn("credentials", {

@@ -4,7 +4,8 @@ import * as z from "zod";
 import bcrypt from "bcryptjs";
 import { db } from "@/lib/db";
 import { getUserByEmail } from "@/data/user";
-
+import { generateToken } from "@/lib/tokens";
+import { sendVerificationEmail } from "@/app/api/send/route";
 export const Register = async (values: z.infer<typeof RegisterSchema>) => {
   try {
     const { success, error } = RegisterSchema.safeParse(values);
@@ -27,7 +28,11 @@ export const Register = async (values: z.infer<typeof RegisterSchema>) => {
         password: hashedPassword,
       },
     });
-    return { success: "User created", status: 201 };
+
+    const verificationToken = await generateToken(email);
+    await sendVerificationEmail(verificationToken.identifier, verificationToken.token);
+
+    return { success: "Confirmation email sent", status: 201 };
   } catch (error) {
     return { status: 500, error: "Internal server error" };
   }

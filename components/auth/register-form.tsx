@@ -3,6 +3,7 @@ import CardWrapper from "@/components/auth/card-wrapper";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { RegisterSchema } from "@/schemas/index";
+import { z } from "zod";
 import { Input } from "@/components/ui/input";
 import {
   Form,
@@ -17,12 +18,9 @@ import { FormError } from "@/components/form-error";
 import { FormSuccess } from "@/components/form-succes";
 import { Register } from "@/actions/register";
 import { useState, useTransition } from "react";
-import { useRouter } from "next/navigation";
 
-// 1:36:00
 
 const RegisterForm = () => {
-  const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | undefined>("");
   const [success, setSuccess] = useState<string | undefined>("");
@@ -46,7 +44,6 @@ const RegisterForm = () => {
         }
         if (data.success) {
           setSuccess(data.success);
-          router.push("/auth/login");
         }
       });
     });

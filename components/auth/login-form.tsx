@@ -21,6 +21,7 @@ import { Login } from "@/actions/login";
 import { useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { DEFAULT_LOGIN_REDIRECT } from "@/routes";
+import { sendVerificationEmail } from "@/app/api/send/route";
 
 const LoginForm = () => {
   const form = useForm<z.infer<typeof LoginSchema>>({
@@ -60,7 +61,7 @@ const LoginForm = () => {
 
     setIsPending(false);
   };
-
+ 
   return (
     <CardWrapper
       headerLabel="Welcome back"

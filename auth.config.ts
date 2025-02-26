@@ -4,7 +4,6 @@ import type { NextAuthConfig } from "next-auth";
 import { getUserByEmail } from "@/data/user";
 import bcrypt from "bcryptjs";
 import Google from "next-auth/providers/google"
-import Github from "next-auth/providers/github"
 export const authConfig = {
   pages: {
     signIn: "/auth/login",
