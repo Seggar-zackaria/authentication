@@ -20,10 +20,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   },
   callbacks: {
     async signIn({ user, account }) {
-      if (account?.provider !== "credentials") return false;
+      // allow oAuth without email verification
+      if (account?.provider !== "credentials") return true;
       if (!user.id) return false;
       const existingUser = await getUserById(user.id);
-
+      console.log("SignIn callback:", { user, account});
       // Prevent sign in if user doesn't exist or email isn't verified
       if (!existingUser?.emailVerified) {
         return false;

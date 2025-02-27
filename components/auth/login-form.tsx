@@ -21,7 +21,7 @@ import { Login } from "@/actions/login";
 import { useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { DEFAULT_LOGIN_REDIRECT } from "@/routes";
-import { sendVerificationEmail } from "@/app/api/send/route";
+import Link from "next/link";
 
 const LoginForm = () => {
   const form = useForm<z.infer<typeof LoginSchema>>({
@@ -95,7 +95,12 @@ const LoginForm = () => {
             name="password"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Password</FormLabel>
+                <div className="flex items-center justify-between">
+                  <FormLabel>Password</FormLabel>
+                  <Button variant="link" size="sm" asChild>
+                    <Link href="/auth/forgot-password">Forgot password?</Link>
+                  </Button>
+                </div>
                 <FormControl>
                   <Input
                     {...field}

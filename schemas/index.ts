@@ -43,3 +43,8 @@ export const RegisterSchema = z.object({
     .string()
     .min(8, { message: "password most be 8 character or above" }),
 });
+
+
+export const ForgotPasswordSchema = z.object({
+  email: z.string().min(1, { message: "email is required" }).email(),
+})

@@ -4,7 +4,6 @@ import * as z from "zod";
 import { LoginSchema } from "@/schemas";
 import { signIn } from "@/auth";
 import { AuthError } from "next-auth";
-import { DEFAULT_LOGIN_REDIRECT } from "@/routes";
 import { getUserByEmail } from "@/data/user";
 import { generateToken } from "@/lib/tokens";
 import { sendVerificationEmail } from "@/app/api/send/route";

@@ -4,15 +4,25 @@ import type { NextAuthConfig } from "next-auth";
 import { getUserByEmail } from "@/data/user";
 import bcrypt from "bcryptjs";
 import Google from "next-auth/providers/google"
+
 export const authConfig = {
+  debug: true,
   pages: {
     signIn: "/auth/login",
+    error: "/auth/error"
   },
 
   providers: [
     Google({
       clientId: process.env.AUTH_GOOGLE_ID as string,
       clientSecret: process.env.AUTH_GOOGLE_SECRET as string,
+      authorization: {
+        params: {
+          prompt: "consent",
+          access_type: "offline",
+          response_type: "code"
+        }
+      }
     }),
     Credentials({
       credentials: {
