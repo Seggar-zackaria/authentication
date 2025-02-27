@@ -54,7 +54,7 @@ export default function ConfirmVerificationPage() {
   }, [searchParams]);
 
   const handleRedirect = () => {
-    router.push(status.isSuccess ? '/login' : '/signup');
+    router.push(status.isSuccess ? '/auth/login' : '/auth/register');
   };
 
   return (

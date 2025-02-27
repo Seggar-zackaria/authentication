@@ -7,7 +7,10 @@
  * '/login',
  * ]
  */
-export const publicRoutes = ["/", "/auth/new-verification"];
+export const publicRoutes = [
+    "/",
+    "/auth/new-verification",
+    ];
 
 /** 
  * An Array of all the auth routes in the app that needs authentication
@@ -16,7 +19,12 @@ export const publicRoutes = ["/", "/auth/new-verification"];
  *
  */
 
-export const authRoutes = ["/auth/login", "/auth/register", '/auth/error'];
+export const authRoutes = [
+    "/auth/login",
+    "/auth/register",
+    '/auth/error',
+    "/auth/forgot-password",
+];
 
 /**
  * the prefix for api authe routes
