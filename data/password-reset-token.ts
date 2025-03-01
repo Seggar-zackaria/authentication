@@ -1,3 +1,4 @@
+"use server";
 import {db} from "@/lib/db";
 import { PasswordResetToken } from "@prisma/client";
 import crypto from "crypto";

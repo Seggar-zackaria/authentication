@@ -1,6 +1,6 @@
 const ResetTemplate = ({ token, email }: { token: string, email: string }) => {
  
-    const resetUrl = `${process.env.BASE_URL}/auth/forgot-password?token=${token}`;
+    const resetUrl = `${process.env.BASE_URL}/auth/reset-password?token=${token}`;
     return (
     <div>
       <h1>Reset Password {email}</h1>

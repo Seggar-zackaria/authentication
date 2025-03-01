@@ -48,3 +48,11 @@ export const RegisterSchema = z.object({
 export const ForgotPasswordSchema = z.object({
   email: z.string().min(1, { message: "email is required" }).email(),
 })
+
+export const ResetPasswordSchema = z.object({
+  password: z
+    .string({ required_error: "Password is required" })
+    .min(1, "Password is required")
+    .min(8, "Password must be 8 characters or above")
+    .max(32, "Password must be less than 32 characters"),
+});
