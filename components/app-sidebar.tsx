@@ -2,10 +2,10 @@
 
 import * as React from "react";
 import {
-  AudioWaveform,
+  SunIcon,
   BookOpen,
   Bot,
-  Command,
+  
   Frame,
   GalleryVerticalEnd,
   Map,
@@ -28,27 +28,13 @@ import {
 
 // This is sample data.
 const data = {
-  user: {
-    name: "zakaria",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
+  
   teams: [
     {
-      name: "Acme Inc",
-      logo: GalleryVerticalEnd,
+      name: "Sun Summer",
+      logo: SunIcon,
       plan: "Enterprise",
-    },
-    {
-      name: "Acme Corp.",
-      logo: AudioWaveform,
-      plan: "Startup",
-    },
-    {
-      name: "Evil Corp.",
-      logo: Command,
-      plan: "Free",
-    },
+    }
   ],
   navMain: [
     {
@@ -59,80 +45,80 @@ const data = {
       items: [
         {
           title: "History",
-          url: "#",
+          url: "/dashboard/history",
         },
         {
           title: "Starred",
-          url: "#",
+          url: "/dashboard/starred",
         },
         {
           title: "Settings",
-          url: "#",
+          url: "/dashboard/settings",
         },
       ],
     },
     {
       title: "Models",
-      url: "#",
+      url: "/dashboard/models",
       icon: Bot,
       items: [
         {
           title: "Genesis",
-          url: "#",
+          url: "/dashboard/models/genesis",
         },
         {
           title: "Explorer",
-          url: "#",
+          url: "/dashboard/models/explorer",
         },
         {
           title: "Quantum",
-          url: "#",
+          url: "/dashboard/models/quantum",
         },
       ],
     },
     {
       title: "Documentation",
-      url: "#",
+      url: "/dashboard/documentation",
       icon: BookOpen,
       items: [
         {
           title: "Introduction",
-          url: "#",
+          url: "/dashboard/documentation/introduction",
         },
         {
           title: "Get Started",
-          url: "#",
+          url: "/dashboard/documentation/get-started",
         },
         {
           title: "Tutorials",
-          url: "#",
+          url: "/dashboard/documentation/tutorials",
         },
         {
           title: "Changelog",
-          url: "#",
+          url: "/dashboard/documentation/changelog",
         },
       ],
     },
     {
       title: "Settings",
-      url: "#",
+      url: "/dashboard/settings",
       icon: Settings2,
       items: [
         {
           title: "General",
-          url: "#",
+          url: "/dashboard/settings/general",
         },
         {
           title: "Team",
-          url: "#",
+          url: "/dashboard/settings/team",
         },
         {
           title: "Billing",
-          url: "#",
+          url: "/dashboard/settings/billing",
         },
         {
           title: "Limits",
-          url: "#",
+          url: "/dashboard/settings/limits",
         },
       ],
     },
@@ -140,17 +126,17 @@ const data = {
   projects: [
     {
       name: "Design Engineering",
-      url: "#",
+      url: "/dashboard/design-engineering",
       icon: Frame,
     },
     {
       name: "Sales & Marketing",
-      url: "#",
+      url: "/dashboard/sales-marketing",
       icon: PieChart,
     },
     {
       name: "Travel",
-      url: "#",
+      url: "/dashboard/travel",
       icon: Map,
     },
   ],
@@ -167,7 +153,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavProjects projects={data.projects} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser  />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

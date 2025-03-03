@@ -8,10 +8,12 @@ export const SignOutButton = () => {
   return (
     <Button 
       size="lg" 
-      onClick={() => signOut({ callbackUrl: "/auth/login" })}
-    >
-      Log Out
+      variant="outline"
+      className="w-full"
+      onClick={() => signOut({ redirectTo: "/auth/login" })}
+      >
       <LogOut />
+      Log Out
     </Button>
   );
 };

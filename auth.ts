@@ -34,15 +34,26 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     },
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user;
-      const isOnDashboard: boolean = nextUrl.pathname.startsWith(
-        DEFAULT_LOGIN_REDIRECT
-      );
-      if (isOnDashboard) {
-        if(isLoggedIn) {
-          return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl))
+      const isOnDashboard = nextUrl.pathname.startsWith(DEFAULT_LOGIN_REDIRECT);
+      const isOnAuthPage = nextUrl.pathname.startsWith("/auth");
+
+      // If user is on auth page and is logged in, redirect to dashboard
+      if (isOnAuthPage) {
+        if (isLoggedIn) {
+          return Response.redirect(new URL(DEFAULT_LOGIN_REDIRECT, nextUrl));
         }
-        return false
+        return true;
       }
+
+      // If user is trying to access dashboard but not logged in
+      if (isOnDashboard) {
+        if (!isLoggedIn) {
+          return Response.redirect(new URL("/auth/login", nextUrl));
+        }
+        return true;
+      }
+
+      return true;
     },
     
     async session({ session, token }) {

@@ -12,7 +12,6 @@ const Sheet = SheetPrimitive.Root
 const SheetTrigger = SheetPrimitive.Trigger
 
 const SheetClose = SheetPrimitive.Close
-
 const SheetPortal = SheetPrimitive.Portal
 
 const SheetOverlay = React.forwardRef<
@@ -135,6 +134,6 @@ export {
   SheetContent,
   SheetHeader,
   SheetFooter,
-  SheetTitle,
   SheetDescription,
+  SheetTitle,
 }

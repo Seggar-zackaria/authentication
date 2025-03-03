@@ -1,3 +1,4 @@
+import { auth } from "@/auth";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -8,8 +9,15 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import { DEFAULT_LOGIN_REDIRECT } from "@/routes";
+import { redirect } from "next/navigation";
 
 export default async function Page() {
+  const session = await auth();
+
+  if (!session) {
+    redirect(DEFAULT_LOGIN_REDIRECT);
+  }
   return (
     <>
       <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
