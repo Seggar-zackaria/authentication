@@ -1,19 +1,10 @@
 'use client'
-
-import { useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 
 export default function AuthError() {
   const searchParams = useSearchParams()
   const error = searchParams.get('error')
-
-  useEffect(() => {
-    // Log the error for debugging
-    if (error) {
-      console.error('Auth error:', error)
-    }
-  }, [error])
 
   const getErrorMessage = (error: string | null) => {
     switch (error) {

@@ -6,7 +6,6 @@ import bcrypt from "bcryptjs";
 import Google from "next-auth/providers/google"
 
 export const authConfig = {
-  debug: true,
   pages: {
     signIn: "/auth/login",
     error: "/auth/error"

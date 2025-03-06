@@ -7,8 +7,8 @@ export type User = {
   emailVerified?: Date | null;
   image?: string | null;
   accounts?: Account[] | null;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
 };
 
 export type Account = {

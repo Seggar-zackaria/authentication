@@ -3,15 +3,12 @@
 import * as React from "react";
 import {
   SunIcon,
-  BookOpen,
-  Bot,
-  
   Frame,
-  GalleryVerticalEnd,
   Map,
   PieChart,
-  Settings2,
-  SquareTerminal,
+  Plane,
+  Hotel,
+  Calendar,
 } from "lucide-react";
 
 import { NavMain } from "@/components/nav-main";
@@ -33,92 +30,68 @@ const data = {
     {
       name: "Sun Summer",
       logo: SunIcon,
-      plan: "Enterprise",
     }
   ],
   navMain: [
     {
-      title: "Playground",
+      title: "Hotel",
       url: "#",
-      icon: SquareTerminal,
+      icon: Hotel,
       isActive: true,
       items: [
         {
-          title: "History",
-          url: "/dashboard/history",
+          title: "Add Hotel",
+          url: "/dashboard/hotel/add",
         },
         {
-          title: "Starred",
-          url: "/dashboard/starred",
+          title: "Edit Hotel",
+          url: "/dashboard/hotel/edit",
         },
         {
-          title: "Settings",
-          url: "/dashboard/settings",
+          title: "View Hotel",
+          url: "/dashboard/hotel/view",
+        }
+      ],
+    },
+    {
+      title: "Flight",
+      url: "#",
+      icon: Plane,
+      items: [
+        {
+          title: "Add Flight",
+          url: "/dashboard/flight/add",
+        },
+        {
+          title: "Edit Flight",
+          url: "/dashboard/flight/edit",
+        },
+        {
+          title: "View Flight",
+          url: "/dashboard/flight/view",
         },
       ],
     },
     {
-      title: "Models",
-      url: "/dashboard/models",
-      icon: Bot,
+      title: "Booking",
+      url: "#",
+      icon: Calendar,
       items: [
         {
-          title: "Genesis",
-          url: "/dashboard/models/genesis",
+          title: "Booking",
+          url: "/dashboard/booking",
         },
         {
-          title: "Explorer",
-          url: "/dashboard/models/explorer",
+          title: "Add Booking",
+          url: "/dashboard/booking/add",
         },
         {
-          title: "Quantum",
-          url: "/dashboard/models/quantum",
-        },
-      ],
-    },
-    {
-      title: "Documentation",
-      url: "/dashboard/documentation",
-      icon: BookOpen,
-      items: [
-        {
-          title: "Introduction",
-          url: "/dashboard/documentation/introduction",
+          title: "Edit Booking",
+          url: "/dashboard/booking/edit",
         },
         {
-          title: "Get Started",
-          url: "/dashboard/documentation/get-started",
-        },
-        {
-          title: "Tutorials",
-          url: "/dashboard/documentation/tutorials",
-        },
-        {
-          title: "Changelog",
-          url: "/dashboard/documentation/changelog",
-        },
-      ],
-    },
-    {
-      title: "Settings",
-      url: "/dashboard/settings",
-      icon: Settings2,
-      items: [
-        {
-          title: "General",
-          url: "/dashboard/settings/general",
-        },
-        {
-          title: "Team",
-          url: "/dashboard/settings/team",
-        },
-        {
-          title: "Billing",
-          url: "/dashboard/settings/billing",
-        },
-        {
-          title: "Limits",
-          url: "/dashboard/settings/limits",
+          title: "View Booking",
+          url: "/dashboard/booking/view",
         },
       ],
     },
@@ -144,6 +117,7 @@ const data = {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
+  
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
         <TeamSwitcher teams={data.teams} />
