@@ -2,7 +2,7 @@ import { auth } from "@/auth";
 import { DEFAULT_LOGIN_REDIRECT } from "@/routes";
 import { redirect } from "next/navigation";
 import { PageWrapper } from "@/components/PageWrapper";
-import {FlightCount, getUsers, HotelCount, UserCount } from '@/lib/data'
+import {FlightCount, getUsers, HotelCount, UserCount, getUserCountsByMonth } from '@/lib/data'
 import {Users, Plane, Hotel} from "lucide-react" 
 import { StatsCard } from "./_component/StaticCard";
 import { Chart } from "./_component/chart-area-stacked";
@@ -25,6 +25,7 @@ export default async function DashboardPage() {
   const userCount = await UserCount();
   const flightBookingsCount = await FlightCount()
   const hotelBookingsCount = await HotelCount()
+  const userCounts = await getUserCountsByMonth();
   return (
     <PageWrapper>
       <div className="grid gap-4 md:grid-cols-3">
@@ -45,8 +46,8 @@ export default async function DashboardPage() {
         />
       </div>
       <section className="grid lg:grid-cols-2 gap-4">
-      <Chart />
-      <DataTable users={users}/>
+        <Chart data={userCounts} />
+        <DataTable users={users}/>
       </section>
     </PageWrapper>
   );

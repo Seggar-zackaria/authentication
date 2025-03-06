@@ -91,7 +91,7 @@ model Room {
   hotelId     String    @map("hotel_id")
   type        String    // e.g., "Single", "Double", "Suite"
   description String    @db.Text
-  capacity    Int
+  capacity    Int       // Maximum number of guests that can stay in the room
   price       Float     // Price per night
   available   Boolean   @default(true)
   amenities   String[]

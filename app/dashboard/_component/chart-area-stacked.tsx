@@ -1,7 +1,7 @@
 "use client"
 
-import { TrendingUp } from "lucide-react"
-import { Area, AreaChart, CartesianGrid, XAxis } from "recharts"
+import { TrendingUp, TrendingDown } from "lucide-react"
+import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from "recharts"
 
 import {
   Card,
@@ -17,42 +17,54 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart"
-const chartData = [
-  { month: "January", booked: 186 },
-  { month: "February", booked: 305 },
-  { month: "March", booked: 237 },
-  { month: "April", booked: 73 },
-  { month: "May", booked: 209 },
-  { month: "June", booked: 214 },
-]
+
+interface ChartProps {
+  data: {
+    month: string;
+    users: number;
+  }[];
+}
 
 const chartConfig = {
-  booked: {
-    label: "booked",
+  users: {
+    label: "Users",
     color: "hsl(var(--chart-1))",
   },
 } satisfies ChartConfig
 
-export function Chart() {
+export function Chart({ data }: ChartProps) {
+  // Calculate trend percentage
+  const calculateTrend = () => {
+    if (data.length < 2) return 0;
+    const currentMonth = data[data.length - 1].users;
+    const previousMonth = data[data.length - 2].users;
+    return ((currentMonth - previousMonth) / previousMonth) * 100;
+  };
+
+  const trend = calculateTrend();
+  const isTrendingUp = trend >= 0;
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Area Chart</CardTitle>
+        <CardTitle>User Growth</CardTitle>
         <CardDescription>
-          Showing total visitors for the last 6 months
+          Monthly user registration trends
         </CardDescription>
       </CardHeader>
       <CardContent>
         <ChartContainer className="lg:min-h-[200px]" config={chartConfig}>
           <AreaChart
             accessibilityLayer
-            data={chartData}
+            data={data}
             margin={{
               left: 12,
               right: 12,
+              top: 20,
+              bottom: 20,
             }}
           >
-            <CartesianGrid vertical={false} />
+            <CartesianGrid vertical={false} strokeDasharray="3 3" />
             <XAxis
               dataKey="month"
               tickLine={false}
@@ -60,16 +72,24 @@ export function Chart() {
               tickMargin={8}
               tickFormatter={(value) => value.slice(0, 3)}
             />
+            <YAxis 
+              tickLine={false}
+              axisLine={false}
+              tickMargin={8}
+            />
             <ChartTooltip
               cursor={false}
               content={<ChartTooltipContent indicator="line" />}
             />
             <Area
-              dataKey="booked"
-              type="natural"
-              fill="var(--color-booked)"
+              dataKey="users"
+              type="monotone"
+              fill="var(--color-users)"
               fillOpacity={0.4}
-              stroke="var(--color-booked)"
+              stroke="var(--color-users)"
+              strokeWidth={2}
+              dot={{ strokeWidth: 2, r: 4, fill: "white" }}
+              activeDot={{ r: 6, strokeWidth: 2 }}
             />
           </AreaChart>
         </ChartContainer>
@@ -78,10 +98,20 @@ export function Chart() {
         <div className="flex w-full items-start gap-2 text-sm">
           <div className="grid gap-2">
             <div className="flex items-center gap-2 font-medium leading-none">
-              Trending up by 5.2% this month <TrendingUp className="h-4 w-4" />
+              {isTrendingUp ? (
+                <>
+                  Trending up by {Math.abs(trend).toFixed(1)}% this month
+                  <TrendingUp className="h-4 w-4 text-green-500" />
+                </>
+              ) : (
+                <>
+                  Trending down by {Math.abs(trend).toFixed(1)}% this month
+                  <TrendingDown className="h-4 w-4 text-red-500" />
+                </>
+              )}
             </div>
             <div className="flex items-center gap-2 leading-none text-muted-foreground">
-              January - June 2024
+              {data[0]?.month} - {data[data.length - 1]?.month} {new Date().getFullYear()}
             </div>
           </div>
         </div>

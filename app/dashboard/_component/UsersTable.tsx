@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input"
 import { PlusIcon} from "lucide-react";
 import { useState } from "react";
 import {User} from "@/lib/definitions"
+import { Badge } from "@/components/ui/badge";
   
   
   interface UsersTableProps {
@@ -26,11 +27,15 @@ import {User} from "@/lib/definitions"
       return(
         user.name?.toLowerCase().includes(searchLower) ||
         user.email?.toLowerCase().includes(searchLower) ||
-        user.role?.toLowerCase().includes(searchLower)
+        user.emailVerified?.toString().toLowerCase().includes(searchLower)
 
       )
     })
 
+    const isVerified = (user: User) => {
+      return user.emailVerified === null;
+    };
+    
     const handleSearch =(e: React.FormEvent) => {
         e.preventDefault()
     }
@@ -51,7 +56,7 @@ import {User} from "@/lib/definitions"
             <TableRow>
               <TableHead>Name</TableHead>
               <TableHead>Email</TableHead>
-              <TableHead>Role</TableHead>
+              <TableHead>status</TableHead>
               <TableHead>Joined</TableHead>
             </TableRow>
           </TableHeader>
@@ -60,7 +65,8 @@ import {User} from "@/lib/definitions"
               <TableRow key={user.id}>
                 <TableCell>{user.name}</TableCell>
                 <TableCell>{user.email}</TableCell>
-                <TableCell>{user.role}</TableCell>
+                {/** to DO later fix */}
+                <TableCell>{isVerified(user) ? (<Badge variant="success">Verified</Badge>):(<Badge variant="warning">Unverified</Badge>)}</TableCell>
                 <TableCell>
                   {user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'N/A'}
                 </TableCell>

@@ -1,34 +1,39 @@
-"use server";
+"use client";
+import { useForm } from "react-hook-form";
+import { Form } from "@/components/ui/form";
+import { ImageField } from "@/app/dashboard/_component/imageFields";
+import { useSession } from "next-auth/react";
+import { redirect } from "next/navigation";
 
-import { auth } from "@/auth";
-import { SignOutButton } from "@/components/auth/sign-out";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import Image from "next/image";
-const SettingPage = async () => {
-  const session = await auth();
+const SettingPage = () => {
+  const { data: session, status } = useSession({
+    required: true,
+    onUnauthenticated() {
+      redirect('/auth/login');
+    },
+  });
+
+  const form = useForm({
+    defaultValues: {
+      images: [],
+    },
+  });
+
+  if (status === "loading") {
+    return <div>Loading...</div>;
+  }
 
   return (
-    <div>
-      <h1>User Credentials</h1>
-      {session ? (
-        <div>
-          <p>Email: {session.user?.email}</p>
-          <p>Name: {session.user?.name}</p>
-          <p>Role: {JSON.stringify(session.user.role)} </p>
-          <Image src={session.user?.image}
-          className="size-12 rounded-lg" width={100} height={100} alt={session.user.name}></Image>
-          <SignOutButton />
-        </div>
-      ) : (
-        <div>
-          <p>You are not signed in.</p>
-          <Button variant={"default"}>
-            <Link href="/auth/login">Log in</Link>
-          </Button>
-        </div>
-      )}
-    </div>
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit((data) => console.log(data))}>
+        <ImageField
+          control={form.control}
+          name="images"
+          label="Hotel Images"
+          maxFiles={5}
+        />
+      </form>
+    </Form>
   );
 };
 

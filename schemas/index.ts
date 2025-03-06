@@ -56,3 +56,16 @@ export const ResetPasswordSchema = z.object({
     .min(8, "Password must be 8 characters or above")
     .max(32, "Password must be less than 32 characters"),
 });
+
+export const HotelSchema = z.object({
+  name: z.string().min(1, { message: "Hotel name is required" }),
+  description: z.string().min(10, { message: "Description must be at least 10 characters" }),
+  address: z.string().min(1, { message: "Address is required" }),
+  city: z.string().min(1, { message: "City is required" }),
+  country: z.string().min(1, { message: "Country is required" }),
+  rating: z.number().min(0).max(5).default(0),
+  state: z.string().min(1, { message: "State is required" }),
+  price: z.number().positive({ message: "Price must be positive" }),
+  images: z.array(z.string().url()),
+  amenities: z.array(z.string()).min(1, { message: "At least one amenity is required" })
+});
