@@ -74,10 +74,11 @@ model Hotel {
   address     String
   city        String
   country     String
+  state       String?
   rating      Float     @default(0)
-  images      String[]  // Array of image URLs
-  amenities   String[]  // Array of amenities
-  roomTypes   Room[]    // Relation to rooms
+  images      String[]  
+  amenities   String[]  
+  roomTypes   Room[]    
   price       Float     // Base price per night
   createdAt   DateTime  @default(now()) @map("created_at")
   updatedAt   DateTime  @updatedAt @map("updated_at")
@@ -89,7 +90,7 @@ model Hotel {
 model Room {
   id          String    @id @default(cuid())
   hotelId     String    @map("hotel_id")
-  type        String    // e.g., "Single", "Double", "Suite"
+  type        String    
   description String    @db.Text
   capacity    Int       // Maximum number of guests that can stay in the room
   price       Float     // Price per night

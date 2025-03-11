@@ -44,7 +44,6 @@ const LoginForm = () => {
     setErrorMessage(null);
     setSuccessMessage(null);
 
-    // Create FormData from the form values
     const formData = new FormData();
     formData.append("email", values.email);
     formData.append("password", values.password);

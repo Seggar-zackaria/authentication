@@ -4,13 +4,15 @@ import { db } from "@/lib/db";
 
 export const addHotel = async (values: z.infer<typeof HotelSchema>) => {
   try {
-    const { success, error } = HotelSchema.safeParse(values);
-    if (!success) {
-      return { status: 400, error: "Invalid fields" };
-    }
-    const { name, description, images, address, city, state, country, price, amenities, rating } = values;
+    const result = HotelSchema.safeParse(values);
     
-    const hotel = await db.hotel.create({
+    if (!result.success) {
+      return { status: 400, error: "Invalid fields", details: result.error.format() };
+    }
+
+    const { name, description, images, address, city, state, country, price, amenities, rating } = result.data;
+
+    await db.hotel.create({
       data: {
         name,
         description,
@@ -18,13 +20,15 @@ export const addHotel = async (values: z.infer<typeof HotelSchema>) => {
         city,
         country,
         price,
+        state,
         rating,
         amenities,
         images,
-    },
+      },
     });
+
+    return { status: 201, message: "Hotel created successfully" };
   } catch (error) {
     return { status: 500, error: "Internal server error" };
   }
 };
-
