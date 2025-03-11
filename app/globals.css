@@ -89,3 +89,16 @@ body,
     @apply bg-background text-foreground;
   }
 }
+
+/* globals.css */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type="number"] {
+  appearance: textfield !important;
+  -moz-appearance: textfield !important;
+}

@@ -1,5 +1,10 @@
 import * as z from "zod";
 
+if (typeof window !== 'undefined') {
+  // Only import File when in browser environment
+  z.instanceof(File);
+}
+
 // const formatPhoneNumber = (value: string): string => {
 //   const cleaned = value.replace(/\s/g, "");
 //   if (cleaned.length !== 10) return cleaned;
@@ -65,7 +70,21 @@ export const HotelSchema = z.object({
   country: z.string().min(1, { message: "Country is required" }),
   rating: z.number().min(0).max(5).default(0),
   state: z.string().min(1, { message: "State is required" }),
-  price: z.number().positive({ message: "Price must be positive" }),
-  images: z.array(z.string().url()),
+  price: z.number().positive({ message: "Price is required" }),
+  images: z
+    .any()
+    .refine((files) => {
+      if (typeof window === 'undefined') {
+        return Array.isArray(files);
+      }
+      return files instanceof FileList || Array.isArray(files);
+    }, "Invalid file input")
+    .transform((files) => {
+      if (typeof window !== 'undefined' && files instanceof FileList) {
+        return Array.from(files);
+      }
+      return files;
+    })
+    .default([]),
   amenities: z.array(z.string()).min(1, { message: "At least one amenity is required" })
 });

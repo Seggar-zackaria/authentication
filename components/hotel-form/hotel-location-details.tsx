@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { useLocation } from "@/hooks/useLocation";
 import {
   Form,
@@ -23,6 +23,29 @@ export function HotelLocationDetails({ form }: HotelFormProps) {
   const { getAllCountries, getCountryStates, getStateCities } = useLocation();
   const countries = getAllCountries;
 
+  // Add effect to reset location fields when form is reset
+  useEffect(() => {
+    const subscription = form.watch(() => {
+      const country = form.getValues("country");
+      const state = form.getValues("state");
+      const city = form.getValues("city");
+
+      if (!country) {
+        setSelectedCountry("");
+        setStates([]);
+      }
+      if (!state) {
+        setSelectedState("");
+        setCities([]);
+      }
+      if (!city) {
+        setSelectedCity("");
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [form]);
+
   const handleCountryChange = useCallback(
     (e: React.ChangeEvent<HTMLSelectElement>) => {
       const country = e.target.value;
@@ -33,6 +56,7 @@ export function HotelLocationDetails({ form }: HotelFormProps) {
       setStates(countryStates);
 
       setSelectedState("");
+      form.setValue("state", "");
       setSelectedCity("");
       form.setValue("city", "");
     },
@@ -43,6 +67,8 @@ export function HotelLocationDetails({ form }: HotelFormProps) {
     (e: React.ChangeEvent<HTMLSelectElement>) => {
       const state = e.target.value;
       setSelectedState(state);
+      form.setValue("state", state);
+      
       const stateCities = getStateCities(selectedCountry, state);
       setCities(stateCities);
       setSelectedCity("");
@@ -106,23 +132,33 @@ export function HotelLocationDetails({ form }: HotelFormProps) {
             />
 
             {selectedCountry && (
-              <FormItem>
-                <FormLabel>State/Province</FormLabel>
-                <FormControl>
-                  <select
-                    className="w-full p-2 border rounded-md"
-                    value={selectedState}
-                    onChange={handleStateChange}
-                  >
-                    <option value="">Select State</option>
-                    {states.map((state: IState) => (
-                      <option key={state.isoCode} value={state.isoCode}>
-                        {state.name}
-                      </option>
-                    ))}
-                  </select>
-                </FormControl>
-              </FormItem>
+              <FormField
+                control={form.control}
+                name="state"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>State/Province</FormLabel>
+                    <FormControl>
+                      <select
+                        className="w-full p-2 border rounded-md"
+                        value={field.value || selectedState}
+                        onChange={(e) => {
+                          field.onChange(e);
+                          handleStateChange(e);
+                        }}
+                      >
+                        <option value="">Select State</option>
+                        {states.map((state: IState) => (
+                          <option key={state.isoCode} value={state.isoCode}>
+                            {state.name}
+                          </option>
+                        ))}
+                      </select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             )}
 
             <FormField

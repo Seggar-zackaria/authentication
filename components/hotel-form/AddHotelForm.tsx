@@ -19,8 +19,7 @@ export default function AddHotelForm() {
   const [error, setError] = useState<string | undefined>("");
   const [success, setSuccess] = useState<string | undefined>("");
   const [loading, setLoading] = useState(false);
-
- 
+  const [images, setImages] = useState<File[]>([]);
 
   const form = useForm({
     resolver: zodResolver(HotelSchema),
@@ -37,22 +36,42 @@ export default function AddHotelForm() {
     },
   });
 
- 
-
   const onSubmit = async (values: z.infer<typeof HotelSchema>) => {
     setError("");
     setSuccess("");
-    setLoading(true)
+    setLoading(true);
+    
     try {
-     const response = await addHotel({values})
-
-      console.log(values);
-      setSuccess("Hotel created successfully!");
+      const response = await addHotel({
+        ...values,
+        images: values.images || []
+      });
+      
+      if (response.status === 201) {
+        setSuccess(response.message);
+        // Reset form with all default values
+        form.reset({
+          name: "",
+          description: "",
+          address: "",
+          city: "",
+          country: "",
+          state: "",
+          rating: 0,
+          price: 0,
+          images: [],
+          amenities: [],
+        });
+        // Reset images state
+        setImages([]);
+      } else {
+        setError(response.error || "Failed to create hotel");
+      }
     } catch (error) {
+      console.error("Submission error:", error);
       setError("Something went wrong!");
     } finally {
-      setLoading(false)
-      console.log(values)
+      setLoading(false);
     }
   };
 
@@ -63,18 +82,18 @@ return (
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           {/* Basic Information Section */}
-          {/* <HotelBasicInfo form={form} /> */}
+          <HotelBasicInfo form={form} />
 
           {/* Location Section */}
-         {/* <HotelLocationDetails form={form} /> */}
+          <HotelLocationDetails form={form} />
 
           {/* Amenities Section */}
-          {/* <HotelAmenities form={form} /> */}
+          <HotelAmenities form={form} />
           <ImageInput form={form} />
-          {/* <FormError message={error} /> */}
-          {/* <FormSuccess message={success} /> */}
+          <FormError message={error} />
+          <FormSuccess message={success} /> 
 
-          <Button type="submit" disabled={loading} className="w-full">
+          <Button type="submit" onClick={() => onSubmit(form.getValues())} disabled={loading} className="w-full">
             Add Hotel
           </Button>
         </form>

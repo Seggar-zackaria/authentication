@@ -20,6 +20,17 @@
 # production
 /build
 
+# images
+/public/uploads
+
+# rules cursor
+.cursorrules
+
+# frontend
+/frontend.mdc
+/backend.mdc
+/general.mdc
+
 # misc
 .DS_Store
 *.pem
