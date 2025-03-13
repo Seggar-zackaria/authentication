@@ -26,3 +26,20 @@ export type Account = {
   session_state: string | null;
   user?: User;
 };
+
+
+export type Hotel = {
+    id?: string;
+    name?: string;
+    description?: string;
+    address?: string;
+    city?: string;
+    country?: string;
+    state?: string | null;
+    rating: number;
+    price: number;
+    images?: string[];
+    amenities: string[];
+    createdAt?: Date;
+    updatedAt?: Date;
+}

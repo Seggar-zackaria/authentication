@@ -35,10 +35,7 @@ import { Badge } from "@/components/ui/badge";
     const isVerified = (user: User) => {
       return user.emailVerified === null;
     };
-    
-    const handleSearch =(e: React.FormEvent) => {
-        e.preventDefault()
-    }
+
     return (
       <div className="flex flex-col gap-4">
       <div className="flex w-full items-center justify-between space-x-2">

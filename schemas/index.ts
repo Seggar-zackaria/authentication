@@ -1,9 +1,5 @@
 import * as z from "zod";
 
-if (typeof window !== 'undefined') {
-  // Only import File when in browser environment
-  z.instanceof(File);
-}
 
 // const formatPhoneNumber = (value: string): string => {
 //   const cleaned = value.replace(/\s/g, "");

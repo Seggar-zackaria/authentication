@@ -37,9 +37,5 @@ const getUserById = async (id: string): Promise<User | undefined> => {
   };
 };
 
-// const saltAndHashPassword = async (password: string) => {
-//   const hashPwd = await bcrypt.compare(password, password);
-//   return hashPwd;
-// };
 
 export { getUserByEmail, getUserById };

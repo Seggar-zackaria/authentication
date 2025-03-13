@@ -61,3 +61,29 @@ export async function getUserCountsByMonth() {
     users: Number(item.count)
   }));
 }
+
+
+
+export const getHotelList = async () => {
+  const hotel = await db.hotel.findMany({
+    orderBy: {
+      createdAt: 'desc'
+    },
+    select: {
+      id: true,
+      name: true,
+      country: true,
+      city: true,
+      price: true,
+      images    : true,
+      description: true,
+      rating: true,
+      amenities: true,
+      state: true,
+      createdAt: true,
+    }
+  })
+
+  return hotel
+}
+

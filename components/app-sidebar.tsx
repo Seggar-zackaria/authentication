@@ -49,7 +49,7 @@ const data = {
         },
         {
           title: "View Hotel",
-          url: "/dashboard/hotel/view",
+          url: "/dashboard/hotel",
         }
       ],
     },

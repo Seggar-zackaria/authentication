@@ -47,7 +47,7 @@ export default async function DashboardPage() {
       </div>
       <section className="grid lg:grid-cols-2 gap-4">
         <Chart data={userCounts} />
-        <DataTable users={users}/>
+        {/* <DataTable users={users}/> */}
       </section>
     </PageWrapper>
   );
