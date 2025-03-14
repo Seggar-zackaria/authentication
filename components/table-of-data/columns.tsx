@@ -2,34 +2,39 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Hotel } from "@/lib/definitions";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@radix-ui/react-hover-card";
-import { Badge } from "../ui/badge";
-import { FaStar } from "react-icons/fa";import { Button } from "../ui/button";
+import { Badge } from "@/components/ui/badge";
+import { FaStar } from "react-icons/fa";
+import { Button } from "@/components/ui/button";
 import {useLocation} from "@/hooks/useLocation"
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
-    DropdownMenuLabel,
     DropdownMenuSeparator,
     DropdownMenuTrigger,
   } from "@/components/ui/dropdown-menu"
-import Link from "next/link";
-import {
-    Popover,
-    PopoverContent,
-    PopoverTrigger,
-  } from "@/components/ui/popover"
-  
+  import { deleteHotel } from "@/actions/hotel";
 import { MoreHorizontal } from "lucide-react";
-
 import { DataTableColumnHeader } from "@/components/table-of-data/Column-header";
-import { editHotel } from "@/actions/hotel";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import Link from "next/link";
+
 export const columns: ColumnDef<Hotel>[] = [
     {
         accessorKey: "name",
         header: ({ column }) => {
             return (
-                <DataTableColumnHeader column={column} title="Email" />
+                <DataTableColumnHeader column={column} title="name" />
             )
         }
     },
@@ -91,7 +96,7 @@ export const columns: ColumnDef<Hotel>[] = [
         accessorKey: "state",
         cell: ({ row }) => {
             const { getStateByCode } = useLocation()
-            const state = getStateByCode(row.original.country, row.original.state)
+            const state = getStateByCode(row.original.country ?? '', row.original.state ?? '')
             return <div className="text-left">{state?.name}</div>
         }
     },
@@ -120,21 +125,43 @@ export const columns: ColumnDef<Hotel>[] = [
                             Copy hotel name
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem>
-                            <Popover>
-                                <PopoverTrigger asChild>
-                                    <Button>Edit</Button>
-                                </PopoverTrigger>
-                                <PopoverContent>
-                                 
-                                    <div>nikom</div>
-                                    
-                                </PopoverContent>
-                            </Popover>
-                        </DropdownMenuItem>
+                        <Link href={`/dashboard/hotel/edit/${hotel.id}`}>
+                            <DropdownMenuItem>
+                                    Edit
+                            </DropdownMenuItem>
+                        </Link>
                         <DropdownMenuSeparator />
-                        <DropdownMenuItem>
-                            <Link href={`/hotels/${hotel.id}/delete`}>Delete</Link>
+                        <DropdownMenuItem onSelect={(e)=> e.preventDefault()}>
+                            <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                    <span>
+                                        Delete
+                                    </span>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                        <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                                        <AlertDialogDescription>
+                                            This action cannot be undone. This will permanently delete the hotel.
+                                        </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                        <AlertDialogAction
+                                            className="bg-destructive"
+                                            onClick={async () => {
+                                                if (!hotel.id) return;
+                                                const result = await deleteHotel(hotel.id);
+                                                if (!result.success) {
+                                                    alert(result.message);
+                                                }
+                                            }}
+                                        >
+                                            Delete
+                                        </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                </AlertDialogContent>
+                            </AlertDialog>
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>

@@ -1,7 +1,5 @@
 "use client";
-
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { useState } from "react";
 import { HotelSchema } from "@/schemas";
@@ -14,14 +12,15 @@ import { FormError } from "@/components/form-error";
 import { FormSuccess } from "@/components/form-succes";
 import { Form } from "@/components/ui/form";
 import { ImageInput } from "@/components/hotel-form/image-input";
+import { CreateHotelForm } from "@/lib/definitions";
 
 export default function AddHotelForm() {
-  const [error, setError] = useState<string | undefined>("");
-  const [success, setSuccess] = useState<string | undefined>("");
+  const [error, setError] = useState<string | undefined>(undefined);
+  const [success, setSuccess] = useState<string | undefined>(undefined);
   const [loading, setLoading] = useState(false);
   const [images, setImages] = useState<File[]>([]);
 
-  const form = useForm({
+  const form = useForm<CreateHotelForm>({
     resolver: zodResolver(HotelSchema),
     defaultValues: {
       name: "",
@@ -29,14 +28,15 @@ export default function AddHotelForm() {
       address: "",
       city: "",
       country: "",
-      rating: 0,
+      rating: 1,
+      state: "",
       price: 0,
       images: [],
       amenities: [],
     },
   });
 
-  const onSubmit = async (values: z.infer<typeof HotelSchema>) => {
+  const onSubmit = async (values: CreateHotelForm) => {
     setError("");
     setSuccess("");
     setLoading(true);
@@ -49,19 +49,7 @@ export default function AddHotelForm() {
       
       if (response.status === 201) {
         setSuccess(response.message);
-        // Reset form with all default values
-        form.reset({
-          name: "",
-          description: "",
-          address: "",
-          city: "",
-          country: "",
-          state: "",
-          rating: 0,
-          price: 0,
-          images: [],
-          amenities: [],
-        });
+        form.reset({images: []})
         // Reset images state
         setImages([]);
       } else {
@@ -77,8 +65,8 @@ export default function AddHotelForm() {
 
 
 return (
-  <div className="flex flex-col gap-4 p-4">
-    <div className="rounded-xl bg-white p-8 shadow-sm">
+  <div className="flex flex-col gap-4">
+    <div>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           {/* Basic Information Section */}
@@ -93,8 +81,8 @@ return (
           <FormError message={error} />
           <FormSuccess message={success} /> 
 
-          <Button type="submit" onClick={() => onSubmit(form.getValues())} disabled={loading} className="w-full">
-            Add Hotel
+          <Button type="submit" disabled={loading} className="w-full">
+           {loading ? "Adding..." : "Add Hotel"}
           </Button>
         </form>
       </Form>

@@ -1,9 +1,12 @@
 import AddHotelForm from "@/components/hotel-form/AddHotelForm"
+import { PageWrapper } from "@/components/PageWrapper";
 
  const AddHotel = () => {
 
   return(
-    <AddHotelForm />
+    <PageWrapper>
+      <AddHotelForm />
+    </PageWrapper>
   )
 }
 

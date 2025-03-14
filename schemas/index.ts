@@ -84,3 +84,8 @@ export const HotelSchema = z.object({
     .default([]),
   amenities: z.array(z.string()).min(1, { message: "At least one amenity is required" })
 });
+
+
+export const HotelUpdateSchema = HotelSchema.partial().extend({
+  id: z.string(),
+});

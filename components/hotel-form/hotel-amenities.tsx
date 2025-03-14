@@ -1,7 +1,7 @@
 import { useState, useCallback } from "react";
 import { Badge } from "@/components/ui/badge";
 import { X } from "lucide-react";
-import {HotelFormProps} from "@/lib/types"
+import {HotelFormComponentProps} from "@/lib/definitions"
 import {
   Form,
   FormControl,
@@ -33,7 +33,7 @@ const PRESET_AMENITIES = [
 
 
 
-export function HotelAmenities({ form }: HotelFormProps) {
+export function HotelAmenities({ form }: HotelFormComponentProps) {
   const [amenityInput, setAmenityInput] = useState("");
   
   // Watch the amenities array so the component updates reactively.

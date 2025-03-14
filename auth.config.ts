@@ -29,7 +29,6 @@ export const authConfig = {
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        // Validate form fields
         const validateFields = LoginSchema.safeParse(credentials);
         if (!validateFields.success) {
           throw new Error("Invalid input");

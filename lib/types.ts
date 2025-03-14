@@ -1,7 +1,7 @@
 import { UseFormReturn } from "react-hook-form";
-import { HotelSchema } from "@/schemas";
-import * as z from "zod";
+import { z } from "zod";
+import { HotelSchema, HotelUpdateSchema } from "@/schemas";
 
 export interface HotelFormProps {
-    form: UseFormReturn<z.infer<typeof HotelSchema>>;
+    form: UseFormReturn<z.infer<typeof HotelSchema> | z.infer<typeof HotelUpdateSchema>>;
 }

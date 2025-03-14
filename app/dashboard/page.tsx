@@ -1,6 +1,4 @@
-import { auth } from "@/auth";
-import { DEFAULT_LOGIN_REDIRECT } from "@/routes";
-import { redirect } from "next/navigation";
+
 import { PageWrapper } from "@/components/PageWrapper";
 import {FlightCount, getUsers, HotelCount, UserCount, getUserCountsByMonth } from '@/lib/data'
 import {Users, Plane, Hotel} from "lucide-react" 
@@ -15,12 +13,6 @@ export const metadata = {
 export default async function DashboardPage() {
 
   const users = await getUsers();
-
-
-  const session = await auth();
-  if (!session) {
-    redirect(DEFAULT_LOGIN_REDIRECT);
-  }
 
   const userCount = await UserCount();
   const flightBookingsCount = await FlightCount()

@@ -1,8 +1,7 @@
 "use client";
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { useLocation } from "@/hooks/useLocation";
 import {
-  Form,
   FormControl,
   FormField,
   FormLabel,
@@ -11,53 +10,48 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { ICountry, IState, ICity } from "country-state-city";
-import { HotelFormProps } from "@/lib/types"
+import { HotelLocationDetailsProps } from "@/lib/definitions";
 
-export function HotelLocationDetails({ form }: HotelFormProps) {
-  const [selectedCountry, setSelectedCountry] = useState<string>("");
-  const [selectedState, setSelectedState] = useState<string>("");
-  const [selectedCity, setSelectedCity] = useState<string>("");
+export function HotelLocationDetails({
+  form,
+  initialCountry = "",
+  initialState = "",
+  initialCity = "",
+}: HotelLocationDetailsProps) {
+  const { getAllCountries, getCountryStates, getStateCities } = useLocation();
+
+  // Get all countries once and memoize them
+  const countries = useMemo(() => getAllCountries, []);
+
   const [states, setStates] = useState<IState[]>([]);
   const [cities, setCities] = useState<ICity[]>([]);
 
-  const { getAllCountries, getCountryStates, getStateCities } = useLocation();
-  const countries = getAllCountries;
-
-  // Add effect to reset location fields when form is reset
   useEffect(() => {
-    const subscription = form.watch(() => {
-      const country = form.getValues("country");
-      const state = form.getValues("state");
-      const city = form.getValues("city");
+    if (initialCountry) {
+      const fetchedStates = getCountryStates(initialCountry);
+      setStates(fetchedStates);
 
-      if (!country) {
-        setSelectedCountry("");
-        setStates([]);
+      if (initialState) {
+        const fetchedCities = getStateCities(initialCountry, initialState);
+        setCities(fetchedCities);
       }
-      if (!state) {
-        setSelectedState("");
-        setCities([]);
-      }
-      if (!city) {
-        setSelectedCity("");
-      }
-    });
 
-    return () => subscription.unsubscribe();
-  }, [form]);
+      // Set default values in the form
+      form.setValue("country", initialCountry);
+      form.setValue("state", initialState);
+      form.setValue("city", initialCity);
+    }
+  }, [initialCountry, initialState, initialCity, form, getCountryStates, getStateCities]);
 
   const handleCountryChange = useCallback(
     (e: React.ChangeEvent<HTMLSelectElement>) => {
       const country = e.target.value;
-      setSelectedCountry(country);
-      form.setValue("country", country);
-
       const countryStates = getCountryStates(country);
       setStates(countryStates);
+      setCities([]);
 
-      setSelectedState("");
+      form.setValue("country", country);
       form.setValue("state", "");
-      setSelectedCity("");
       form.setValue("city", "");
     },
     [form, getCountryStates]
@@ -66,129 +60,124 @@ export function HotelLocationDetails({ form }: HotelFormProps) {
   const handleStateChange = useCallback(
     (e: React.ChangeEvent<HTMLSelectElement>) => {
       const state = e.target.value;
-      setSelectedState(state);
-      form.setValue("state", state);
-      
-      const stateCities = getStateCities(selectedCountry, state);
+      const country = form.getValues("country") ?? "";
+      const stateCities = getStateCities(country, state);
       setCities(stateCities);
-      setSelectedCity("");
+
+      form.setValue("state", state);
       form.setValue("city", "");
     },
-    [form, getStateCities, selectedCountry]
-  );
-
-  const handleCityChange = useCallback(
-    (e: React.ChangeEvent<HTMLSelectElement>) => {
-      const city = e.target.value;
-      setSelectedCity(city);
-      form.setValue("city", city);
-    },
-    [form]
+    [form, getStateCities]
   );
 
   return (
-    <Form {...form}>
-      <div className="space-y-6">
-        <h2 className="text-xl font-semibold text-gray-900">Location Details</h2>
-        <div className="space-y-4">
+    <div className="space-y-6">
+      <h2 className="text-xl font-semibold text-gray-900">Location Details</h2>
+      <div className="space-y-4">
+        {/* Street Address Field */}
+        <FormField
+          control={form.control}
+          name="address"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Street Address</FormLabel>
+              <FormControl>
+                <Input {...field} placeholder="Enter street address" />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* Country, State, City Dropdowns */}
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+          {/* Country Select */}
           <FormField
             control={form.control}
-            name="address"
+            name="country"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Street Address</FormLabel>
+                <FormLabel>Country</FormLabel>
                 <FormControl>
-                  <Input {...field} placeholder="Enter street address" />
+                  <select
+                    className="w-full p-2 border rounded-md"
+                    value={field.value}
+                    onChange={(e) => {
+                      field.onChange(e.target.value);
+                      handleCountryChange(e);
+                    }}
+                  >
+                    <option value="">Select Country</option>
+                    {countries.map((country: ICountry) => (
+                      <option key={country.isoCode} value={country.isoCode}>
+                        {country.name}
+                      </option>
+                    ))}
+                  </select>
                 </FormControl>
                 <FormMessage />
               </FormItem>
             )}
           />
 
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-            <FormField
-              control={form.control}
-              name="country"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Country</FormLabel>
-                  <FormControl>
-                    <select
-                      className="w-full p-2 border rounded-md"
-                      value={selectedCountry}
-                      onChange={handleCountryChange}
-                    >
-                      <option value="">Select Country</option>
-                      {countries.map((country: ICountry) => (
-                        <option key={country.isoCode} value={country.isoCode}>
-                          {country.name}
-                        </option>
-                      ))}
-                    </select>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            {selectedCountry && (
-              <FormField
-                control={form.control}
-                name="state"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>State/Province</FormLabel>
-                    <FormControl>
-                      <select
-                        className="w-full p-2 border rounded-md"
-                        value={field.value || selectedState}
-                        onChange={(e) => {
-                          field.onChange(e);
-                          handleStateChange(e);
-                        }}
-                      >
-                        <option value="">Select State</option>
-                        {states.map((state: IState) => (
-                          <option key={state.isoCode} value={state.isoCode}>
-                            {state.name}
-                          </option>
-                        ))}
-                      </select>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+          {/* State Select */}
+          <FormField
+            control={form.control}
+            name="state"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>State/Province</FormLabel>
+                <FormControl>
+                  <select
+                    className="w-full p-2 border rounded-md"
+                    value={field.value}
+                    onChange={(e) => {
+                      field.onChange(e.target.value);
+                      handleStateChange(e);
+                    }}
+                    disabled={!form.getValues("country")}
+                  >
+                    <option value="">Select State</option>
+                    {states.map((state: IState) => (
+                      <option key={state.isoCode} value={state.isoCode}>
+                        {state.name}
+                      </option>
+                    ))}
+                  </select>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
             )}
+          />
 
-            <FormField
-              control={form.control}
-              name="city"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>City</FormLabel>
-                  <FormControl>
-                    <select
-                      className="w-full p-2 border rounded-md"
-                      value={selectedCity}
-                      onChange={handleCityChange}
-                      disabled={!selectedState}
-                    >
-                      <option value="">Select City</option>
-                      {cities.map((city: ICity) => (
-                        <option key={city.name} value={city.name}>
-                          {city.name}
-                        </option>
-                      ))}
-                    </select>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
+          {/* City Select */}
+          <FormField
+            control={form.control}
+            name="city"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>City</FormLabel>
+                <FormControl>
+                  <select
+                    className="w-full p-2 border rounded-md"
+                    value={field.value}
+                    onChange={field.onChange}
+                    disabled={!form.getValues("state")}
+                  >
+                    <option value="">Select City</option>
+                    {cities.map((city: ICity) => (
+                      <option key={city.name} value={city.name}>
+                        {city.name}
+                      </option>
+                    ))}
+                  </select>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
         </div>
       </div>
-    </Form>
+    </div>
   );
 }

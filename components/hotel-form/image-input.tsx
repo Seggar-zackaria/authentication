@@ -1,8 +1,7 @@
-import {HotelFormProps} from "@/lib/types"
+import {ImageInputProps} from "@/lib/definitions"
 import {Input} from "@/components/ui/input"
 import Image from "next/image"
 import {
-    Form,
     FormField,
     FormItem,
     FormLabel,
@@ -12,102 +11,105 @@ import {
 } from "@/components/ui/form"
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ChangeEvent, useCallback, useEffect } from "react"
+import { ChangeEvent, useEffect } from "react"
 import { useState } from "react"
 
-export const ImageInput = ({form}: HotelFormProps ) => {
-    const [previewUrls, setPreviewUrls] = useState<string[]>([])
-    
+export const ImageInput = ({ form, existingImages = [] }: ImageInputProps<any>) => {
+    const [previewUrls, setPreviewUrls] = useState<string[]>(existingImages)
+    const [newImages, setNewImages] = useState<File[]>([])
+
     const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files.length > 0) {
-            const files = Array.from(e.target.files);
+            const files = Array.from(e.target.files)
             
             // Create temporary URLs for preview
-            const urls = files.map(file => URL.createObjectURL(file));
-            setPreviewUrls(prev => [...prev, ...urls]);
+            const urls = files.map(file => URL.createObjectURL(file))
+            setPreviewUrls(prev => [...prev, ...urls])
             
-            // Store the actual files in the form
-            form.setValue("images", files, {
+            // Store the new files
+            setNewImages(prev => [...prev, ...files])
+            
+            // Update form value with all images
+            form.setValue("images", [...newImages, ...files], {
                 shouldValidate: true,
                 shouldDirty: true,
                 shouldTouch: true
-            });
+            })
         }
     }
 
-    // Add effect to clear preview URLs when form is reset
+    const removeImage = (index: number) => {
+        // Remove from preview URLs
+        setPreviewUrls(prev => prev.filter((_, i) => i !== index))
+
+        // If it's a new image, remove from newImages array
+        if (index >= existingImages.length) {
+            const newImageIndex = index - existingImages.length
+            setNewImages(prev => prev.filter((_, i) => i !== newImageIndex))
+            form.setValue("images", newImages.filter((_, i) => i !== newImageIndex))
+        } else {
+            // If it's an existing image, update the form to indicate removal
+            const remainingExistingImages = existingImages.filter((_, i) => i !== index)
+            form.setValue("existingImages", remainingExistingImages)
+        }
+    }
+
+    // Cleanup preview URLs when component unmounts
     useEffect(() => {
-        const subscription = form.watch(() => {
-            const images = form.getValues("images");
-            if (!images || images.length === 0) {
-                // Clear preview URLs and revoke object URLs
-                previewUrls.forEach(url => URL.revokeObjectURL(url));
-                setPreviewUrls([]);
-            }
-        });
-
-        return () => subscription.unsubscribe();
-    }, [form, previewUrls]);
-
-    const handleRemoveImage = useCallback((indexToRemove: number) => {
-        setPreviewUrls(prev => {
-            const newUrls = prev.filter((_, index) => index !== indexToRemove);
-            const currentFiles = form.getValues("images");
-            const newFiles = Array.from(currentFiles).filter((_, index) => index !== indexToRemove);
-            form.setValue("images", newFiles);
-            return newUrls;
-        });
-    }, [form]);
+        return () => {
+            previewUrls.forEach(url => {
+                if (!existingImages.includes(url)) {
+                    URL.revokeObjectURL(url)
+                }
+            })
+        }
+    }, [previewUrls, existingImages])
 
     return (
-        <div>
-            <Form {...form}>
-                <FormField 
-                    control={form.control}
-                    name="images"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel className="border-2 border-dashed border-gray-300 rounded-md p-6 cursor-pointer w-full flex flex-col items-center justify-center gap-2 hover:border-gray-400 transition-colors">
-                                <span>Drop images here or click to upload</span>
-                                <span className="text-sm text-gray-500">Supported formats: JPG, PNG, GIF (max 5MB)</span>
-                            </FormLabel>
-                            <FormControl>
-                                <Input
-                                    type="file"
-                                    multiple={true}
-                                    accept="image/*"
-                                    onChange={handleImageChange}
-                                    className="hidden"
+        <FormField
+            control={form.control}
+            name="images"
+            render={({ field }) => (
+                <FormItem>
+                    <FormLabel>Hotel Images</FormLabel>
+                    <FormControl>
+                        <Input
+                            type="file"
+                            accept="image/*"
+                            multiple
+                            onChange={handleImageChange}
+                            className="cursor-pointer"
+                        />
+                    </FormControl>
+                    <FormDescription>
+                        Upload multiple images of your hotel
+                    </FormDescription>
+                    <FormMessage />
+                    
+                    {/* Image Preview Grid */}
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-4">
+                        {previewUrls.map((url, index) => (
+                            <div key={url} className="relative group aspect-square">
+                                <Image
+                                    src={url}
+                                    alt={`Preview ${index + 1}`}
+                                    fill
+                                    className="object-cover rounded-lg"
                                 />
-                            </FormControl>
-                            <FormMessage />
-                            <FormDescription>Upload the hotel images</FormDescription>
-
-                            <div className="flex flex-wrap gap-2 mt-4">
-                                {previewUrls.map((url, index) => (
-                                    <div className="group relative" key={index}>
-                                        <Image
-                                            className="rounded-md object-cover"
-                                            src={url}
-                                            alt={`hotel image ${index + 1}`}
-                                            width={150}
-                                            height={(9/16) * 150}
-                                        />
-                                        <Button
-                                            className="absolute right-2 top-2 opacity-0 group-hover:opacity-100 transition-opacity"
-                                            onClick={() => handleRemoveImage(index)}
-                                            variant="destructive"
-                                            size="icon"
-                                        >
-                                            <X />
-                                        </Button>
-                                    </div>
-                                ))}
+                                <Button
+                                    type="button"
+                                    variant="destructive"
+                                    size="icon"
+                                    className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                                    onClick={() => removeImage(index)}
+                                >
+                                    <X className="h-4 w-4" />
+                                </Button>
                             </div>
-                        </FormItem>
-                    )}
-                />
-            </Form>
-        </div>
+                        ))}
+                    </div>
+                </FormItem>
+            )}
+        />
     )
 }

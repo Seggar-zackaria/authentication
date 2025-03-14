@@ -10,7 +10,7 @@ export const SignOutButton = () => {
       size="lg" 
       variant="outline"
       className="w-full"
-      onClick={() => signOut({ redirectTo: "/auth/login" })}
+      onClick={() => signOut()}
       >
       <LogOut />
       Log Out

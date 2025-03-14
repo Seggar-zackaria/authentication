@@ -11,12 +11,10 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { StarRating } from "@/components/hotel-form/star-rating";
-import { HotelFormProps } from "@/lib/types";
+import { HotelFormComponentProps } from "@/lib/definitions";
 
-export function HotelBasicInfo({ form }: HotelFormProps) {
+export function HotelBasicInfo({ form }: HotelFormComponentProps) {
   return (
-    <Form {...form}>
-
     <div className="space-y-6">
     <h2 className="text-xl font-semibold text-gray-900">Basic Information</h2>
     <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
@@ -41,7 +39,7 @@ export function HotelBasicInfo({ form }: HotelFormProps) {
               <FormItem>
                 <FormLabel>Hotel Rating</FormLabel>
                 <FormControl>
-                  <StarRating value={field.value} onChange={field.onChange} />
+                  <StarRating {...field} value={field.value ?? 1} onChange={field.onChange} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -58,6 +56,7 @@ export function HotelBasicInfo({ form }: HotelFormProps) {
                 type="number"
                 min="0"
                 {...field}
+                value={field.value ?? 0}
                 onChange={(e) => field.onChange(Number(e.target.value))}
                 placeholder="0.00"
               />
@@ -86,7 +85,4 @@ export function HotelBasicInfo({ form }: HotelFormProps) {
       )}
     />
   </div>
-  </Form>
-
-)
-}
+)}

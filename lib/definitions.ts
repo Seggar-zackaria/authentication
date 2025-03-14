@@ -1,3 +1,7 @@
+import { UseFormReturn } from "react-hook-form";
+import * as z from "zod";
+import { HotelSchema, HotelUpdateSchema } from "@/schemas";
+
 export type User = {
   id: string;
   name?: string | null;
@@ -27,7 +31,6 @@ export type Account = {
   user?: User;
 };
 
-
 export type Hotel = {
     id?: string;
     name?: string;
@@ -42,4 +45,25 @@ export type Hotel = {
     amenities: string[];
     createdAt?: Date;
     updatedAt?: Date;
+}
+
+export type CreateHotelForm = z.infer<typeof HotelSchema>;
+export type UpdateHotelForm = z.infer<typeof HotelUpdateSchema>;
+
+// Separate props for subcomponents
+export interface HotelFormComponentProps {
+  form: UseFormReturn<CreateHotelForm> | UseFormReturn<UpdateHotelForm>;
+}
+
+// Props for location details component
+export interface HotelLocationDetailsProps extends HotelFormComponentProps {
+  initialCountry?: string;
+  initialState?: string;
+  initialCity?: string;
+}
+
+// Props for image input component
+export interface ImageInputProps<T extends CreateHotelForm | UpdateHotelForm> {
+  form: UseFormReturn<T>;
+  existingImages?: string[];
 }

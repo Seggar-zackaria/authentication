@@ -1,18 +1,23 @@
 import type React from "react";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-
+import { auth } from "@/auth";
+import { redirect } from "next/navigation";
 
 export const metadata = {
   title: 'Dashboard | Customer',
   description: 'Customer management dashboard',
 }
 
-export default function DashboardLayout({
+export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const session = await auth();
+  if (!session) {
+    redirect("/auth/login");
+  }
   return (
     <SidebarProvider>
     <AppSidebar />
