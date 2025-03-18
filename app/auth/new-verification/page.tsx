@@ -45,7 +45,7 @@ export default function ConfirmVerificationPage() {
         setStatus({
           isLoading: false,
           isSuccess: false,
-          error: 'Failed to verify email. Please try again.',
+          error: `Failed to verify email. Please try again. ${error}`,
         });
       }
     };

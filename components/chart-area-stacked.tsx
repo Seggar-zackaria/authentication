@@ -33,7 +33,6 @@ const chartConfig = {
 } satisfies ChartConfig
 
 export function Chart({ data }: ChartProps) {
-  // Calculate trend percentage
   const calculateTrend = () => {
     if (data.length < 2) return 0;
     const currentMonth = data[data.length - 1].users;

@@ -1,6 +1,7 @@
 import { UseFormReturn } from "react-hook-form";
 import * as z from "zod";
 import { HotelSchema, HotelUpdateSchema } from "@/schemas";
+import { flightSchema } from "@/schemas";
 
 export type User = {
   id: string;
@@ -67,3 +68,5 @@ export interface ImageInputProps<T extends CreateHotelForm | UpdateHotelForm> {
   form: UseFormReturn<T>;
   existingImages?: string[];
 }
+
+export type FlightFormValues = z.infer<typeof flightSchema>;

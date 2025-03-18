@@ -1,7 +1,7 @@
 import { getVerificationTokenByEmail } from "@/data/verification-token";
 import { randomBytes } from "crypto";
 import { db } from "./db";
-import { createPasswordResetByEmail, createPasswordResetByToken } from "@/data/password-reset-token";
+import { createPasswordResetByToken } from "@/data/password-reset-token";
 
 // generate a random token
 const token = randomBytes(32).toString("hex");

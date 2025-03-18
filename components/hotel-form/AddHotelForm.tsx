@@ -51,6 +51,7 @@ export default function AddHotelForm() {
         setSuccess(response.message);
         form.reset({images: []})
         // Reset images state
+        images.length = 0;
         setImages([]);
       } else {
         setError(response.error || "Failed to create hotel");
@@ -69,13 +70,8 @@ return (
     <div>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          {/* Basic Information Section */}
           <HotelBasicInfo form={form} />
-
-          {/* Location Section */}
           <HotelLocationDetails form={form} />
-
-          {/* Amenities Section */}
           <HotelAmenities form={form} />
           <ImageInput form={form} />
           <FormError message={error} />

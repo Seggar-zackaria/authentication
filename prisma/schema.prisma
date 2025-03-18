@@ -112,8 +112,10 @@ model Flight {
   departureTime   DateTime
   arrivalTime     DateTime
   price           Float
+  duration        Int       
   capacity        Int
   availableSeats  Int
+  stops           Int      @default(0)
   status          FlightStatus @default(SCHEDULED)
   createdAt       DateTime  @default(now()) @map("created_at")
   updatedAt       DateTime  @updatedAt @map("updated_at")

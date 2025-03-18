@@ -27,9 +27,11 @@
 .cursorrules
 
 # frontend
-/frontend.mdc
-/backend.mdc
-/general.mdc
+/.cursor/frontend.mdc
+/.cursor/*
+
+# backend
+/.cursor/backend.mdc
 
 # misc
 .DS_Store

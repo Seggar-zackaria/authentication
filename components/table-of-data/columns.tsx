@@ -28,6 +28,14 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import Link from "next/link";
+// Create a proper React component to use the hook
+function StateCell({ row }: { row: { original: Hotel } }) {
+  const { getStateByCode } = useLocation();
+  const hotel = row.original;
+  // Assuming Hotel has stateCode and countryCode properties
+  const state = getStateByCode(hotel.country ?? '', hotel.state ?? '');
+  return <div className="text-left">{state?.name ?? hotel.state}</div>;
+}
 
 export const columns: ColumnDef<Hotel>[] = [
     {
@@ -94,11 +102,7 @@ export const columns: ColumnDef<Hotel>[] = [
     {
         header: "State",
         accessorKey: "state",
-        cell: ({ row }) => {
-            const { getStateByCode } = useLocation()
-            const state = getStateByCode(row.original.country ?? '', row.original.state ?? '')
-            return <div className="text-left">{state?.name}</div>
-        }
+        cell: ({ row }) => <StateCell row={row} />
     },
     {
         header: "City",

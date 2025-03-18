@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useLocation } from "@/hooks/useLocation";
 import {
   FormControl,
@@ -21,7 +21,7 @@ export function HotelLocationDetails({
   const { getAllCountries, getCountryStates, getStateCities } = useLocation();
 
   // Get all countries once and memoize them
-  const countries = useMemo(() => getAllCountries, []);
+  const countries = useMemo(() => getAllCountries, [getAllCountries]);
 
   const [states, setStates] = useState<IState[]>([]);
   const [cities, setCities] = useState<ICity[]>([]);

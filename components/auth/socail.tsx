@@ -27,10 +27,10 @@ export const Social = () => {
       setError(undefined);
 
       await signIn(provider, {
-        callbackUrl: DEFAULT_LOGIN_REDIRECT,
+        callbackUrl: DEFAULT_LOGIN_REDIRECT,    
       });
     } catch (error) {
-      setError(`Something went wrong with ${provider} login`);
+      setError(`Something went wrong with ${provider} login. ${error}`);
     } finally {
       setIsLoading(false);
     }

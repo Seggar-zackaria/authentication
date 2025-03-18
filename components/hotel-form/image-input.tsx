@@ -1,4 +1,4 @@
-import {ImageInputProps} from "@/lib/definitions"
+import {ImageInputProps, CreateHotelForm} from "@/lib/definitions"
 import {Input} from "@/components/ui/input"
 import Image from "next/image"
 import {
@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import { ChangeEvent, useEffect } from "react"
 import { useState } from "react"
 
-export const ImageInput = ({ form, existingImages = [] }: ImageInputProps<any>) => {
+export const ImageInput = ({ form, existingImages = [] }: ImageInputProps<CreateHotelForm>) => {
     const [previewUrls, setPreviewUrls] = useState<string[]>(existingImages)
     const [newImages, setNewImages] = useState<File[]>([])
 
@@ -50,7 +50,7 @@ export const ImageInput = ({ form, existingImages = [] }: ImageInputProps<any>) 
         } else {
             // If it's an existing image, update the form to indicate removal
             const remainingExistingImages = existingImages.filter((_, i) => i !== index)
-            form.setValue("existingImages", remainingExistingImages)
+            form.setValue("images", remainingExistingImages)
         }
     }
 
@@ -69,7 +69,7 @@ export const ImageInput = ({ form, existingImages = [] }: ImageInputProps<any>) 
         <FormField
             control={form.control}
             name="images"
-            render={({ field }) => (
+            render={() => (
                 <FormItem>
                     <FormLabel>Hotel Images</FormLabel>
                     <FormControl>

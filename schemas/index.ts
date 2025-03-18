@@ -1,4 +1,5 @@
 import * as z from "zod";
+import { isAfter, parse } from "date-fns";
 
 
 // const formatPhoneNumber = (value: string): string => {
@@ -89,3 +90,70 @@ export const HotelSchema = z.object({
 export const HotelUpdateSchema = HotelSchema.partial().extend({
   id: z.string(),
 });
+
+
+export const flightSchema = z.object({
+  flightNumber: z
+    .string()
+    .min(1, { message: "Flight number is required" })
+    .transform(val => val.toUpperCase()),
+  
+  airline: z
+    .string()
+    .min(2, { message: "Airline name must be at least 2 characters" }),
+  
+  departureCity: z
+    .string()
+    .min(2, { message: "Departure city is required" }),
+  
+  arrivalCity: z
+    .string()
+    .min(2, { message: "Arrival city is required" }),
+  
+  date: z
+    .string()
+    .min(1, { message: "Date is required" })
+    .refine(val => new Date(val) > new Date(), {
+      message: "Flight date must be in the future"
+    }),
+  
+  departureTime: z
+    .string()
+    .regex(/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/, {
+      message: "Invalid time format (HH:mm)"
+    }),
+  
+  arrivalTime: z
+    .string()
+    .regex(/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/, {
+      message: "Invalid time format (HH:mm)"
+    }),
+  
+  price: z
+    .number()
+    .positive({ message: "Price must be greater than 0" }),
+  
+  duration: z
+    .number()
+    .positive({ message: "Duration must be greater than 0" }),
+  
+  stops: z
+    .number()
+    .min(0, { message: "Stops cannot be negative" }),
+  
+  status: z.enum(["SCHEDULED", "DELAYED", "CANCELLED", "COMPLETED"], {
+    required_error: "Status is required",
+  }),
+}).refine((data) => {
+  const depTime = parse(`${data.date} ${data.departureTime}`, 'yyyy-MM-dd HH:mm', new Date());
+  const arrTime = parse(`${data.date} ${data.arrivalTime}`, 'yyyy-MM-dd HH:mm', new Date());
+  return isAfter(arrTime, depTime);
+}, {
+  message: "Arrival time must be after departure time",
+  path: ["arrivalTime"]
+}).refine((data) => data.arrivalCity !== data.departureCity, {
+  message: "Arrival city must be different from departure city",
+  path: ["arrivalCity"]
+});
+
+

@@ -1,7 +1,8 @@
 import AddHotelForm from "@/components/hotel-form/AddHotelForm"
 import { PageWrapper } from "@/components/PageWrapper";
 
- const AddHotel = () => {
+
+const AddHotel = async () => {
 
   return(
     <PageWrapper>
