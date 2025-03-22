@@ -1,9 +1,9 @@
 "use client"
 import { ColumnDef } from "@tanstack/react-table";
-import { Hotel } from "@/lib/definitions";
+import { Hotel, FlightFormValues } from "@/lib/definitions";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@radix-ui/react-hover-card";
 import { Badge } from "@/components/ui/badge";
-import { FaStar } from "react-icons/fa";
+import { FaArrowRight, FaStar } from "react-icons/fa";
 import { Button } from "@/components/ui/button";
 import {useLocation} from "@/hooks/useLocation"
 import {
@@ -28,21 +28,27 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import Link from "next/link";
-// Create a proper React component to use the hook
+import { format as dateFormat } from "date-fns";
+import { deleteFlight } from "@/actions/flight";
+import React from "react";
+
 function StateCell({ row }: { row: { original: Hotel } }) {
   const { getStateByCode } = useLocation();
   const hotel = row.original;
-  // Assuming Hotel has stateCode and countryCode properties
   const state = getStateByCode(hotel.country ?? '', hotel.state ?? '');
   return <div className="text-left">{state?.name ?? hotel.state}</div>;
 }
 
-export const columns: ColumnDef<Hotel>[] = [
+export const Hotelcolumns: ColumnDef<Hotel>[] = [
     {
         accessorKey: "name",
         header: ({ column }) => {
             return (
-                <DataTableColumnHeader column={column} title="name" />
+                <DataTableColumnHeader 
+                column={column} 
+                title="name" 
+                filterColumn="name"
+            />
             )
         }
     },
@@ -53,9 +59,7 @@ export const columns: ColumnDef<Hotel>[] = [
             const rating = row.original.rating
             return (
                 <div className="text-left flex items-center gap-2">
-                    <FaStar 
-                        className={`w-4 h-4 ${rating > 0 ? 'text-yellow-500' : 'text-gray-400'}`} 
-                    />
+                    <FaStar className={`w-4 h-4 ${rating > 0 ? 'text-yellow-500' : 'text-gray-400'}`} />
                     {rating}
                 </div>
             )
@@ -158,6 +162,191 @@ export const columns: ColumnDef<Hotel>[] = [
                                                 const result = await deleteHotel(hotel.id);
                                                 if (!result.success) {
                                                     alert(result.message);
+                                                }
+                                            }}
+                                        >
+                                            Delete
+                                        </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                </AlertDialogContent>
+                            </AlertDialog>
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+            </div>
+        }
+    }
+]
+
+interface Flight {
+  id: string
+  flightNumber: string
+  airline: string
+  departureCity: string
+  arrivalCity: string
+  departureTime: Date
+  arrivalTime: Date
+  status: "SCHEDULED" | "DELAYED" | "CANCELLED" | "COMPLETED"
+  price: number
+  duration: number
+  stops: number
+}
+
+export const FlightColumn: ColumnDef<Flight>[] = [
+    {
+        accessorKey: "flightNumber",
+        header: ({ column }) => (
+            <DataTableColumnHeader 
+                column={column} 
+                title="Flight Number"
+            />
+        ),
+    },
+    {
+        accessorKey: "airline",
+        header: ({ column }) => (
+            <DataTableColumnHeader 
+                column={column} 
+                title="Airline"
+            />
+        ),
+    },
+    {
+        header: "Route",
+        accessorKey: "departureCity",
+        cell: ({row}) => {
+            return (
+                <div className="flex items-center gap-2">
+                    {row.original.departureCity} <FaArrowRight /> {row.original.arrivalCity}
+                </div>
+            )
+        }
+    },
+    {
+        header: "Schedule",
+        accessorKey: "departureTime",
+        cell: ({row}) => {
+            const departureTime = row.original.departureTime;
+            const arrivalTime = row.original.arrivalTime;
+            
+            return (
+                <div className="flex flex-col gap-1">
+                    <div className="text-sm">
+                        Departure: {departureTime ? dateFormat(new Date(departureTime), "PPp") : "N/A"}
+                    </div>
+                    <div className="text-sm text-muted-foreground">
+                        Arrival: {arrivalTime ? dateFormat(new Date(arrivalTime), "PPp") : "N/A"}
+                    </div>
+                </div>
+            )
+        }
+    },
+    {
+        accessorKey: "status",
+        header: ({ column }) => (
+            <DataTableColumnHeader 
+                column={column} 
+                title="Status"
+            />
+        ),
+        cell: ({ row }) => {
+            const status = row.original.status
+            return (
+                <Badge variant={
+                    status === "COMPLETED" ? "success" :
+                    status === "SCHEDULED" ? "default" :
+                    status === "DELAYED" ? "warning" :
+                    "destructive"
+                }>
+                    {status.toLowerCase()}
+                </Badge>
+            )
+        }
+    },
+    {
+        accessorKey: "price",
+        header: "Price",
+        cell: ({ row }) => {
+            const price = row.getValue("price")
+            if (price === undefined || price === null || isNaN(Number(price))) {
+                return <div>N/A</div>
+            }
+            const formatted = new Intl.NumberFormat("fr-DZ", {
+                style: "currency",
+                currency: "DZD",
+            }).format(Number(price))
+            return <div className="text-left">{formatted}</div>
+        }
+    },
+    {
+        accessorKey: "duration",
+        header: "Duration",
+        cell: ({ row }) => {
+            const duration = row.original.duration
+            return <div>{duration !== undefined && duration !== null && !isNaN(duration) ? `${duration} mins` : 'N/A'}</div>
+        }
+    },
+    {
+        accessorKey: "stops",
+        header: "Stops",
+        cell: ({ row }) => {
+            const stops = row.original.stops
+            if (stops === undefined || stops === null || isNaN(stops)) {
+                return <div>N/A</div>
+            }
+            return <div>{stops} stop{stops !== 1 ? 's' : ''}</div>
+        }
+    },
+    {
+        id: "actions",
+        cell: ({ row }) => {
+            const flight = row.original
+            return <div className="text-left">
+                <DropdownMenu>
+                    <DropdownMenuTrigger>
+                        <div className="size-8 p-0 inline-flex items-center justify-center rounded-md border border-transparent hover:bg-neutral-100 hover:border hover:border-neutral-400">
+                            <span className="sr-only">open menu</span>
+                            <MoreHorizontal className="w-4 h-4" />
+                        </div>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                        <DropdownMenuItem
+                            onClick={() => {
+                                navigator.clipboard.writeText(flight?.flightNumber || "")
+                            }}
+                        >
+                            Copy flight number
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <Link href={`/dashboard/admin/flight/edit/${flight.id}`}>
+                            <DropdownMenuItem>
+                                    Edit
+                            </DropdownMenuItem>
+                        </Link>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onSelect={(e)=> e.preventDefault()}>
+                            <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                    <span>
+                                        Delete
+                                    </span>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                        <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                                        <AlertDialogDescription>
+                                            This action cannot be undone. This will permanently delete the flight.
+                                        </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                        <AlertDialogAction
+                                            className="bg-destructive"
+                                            onClick={async () => {
+                                                if (!flight.id) return;
+                                                const result = await deleteFlight(flight.id);
+                                                if (result.status !== 200) {
+                                                    alert(result.error || result.message || "Failed to delete flight");
                                                 }
                                             }}
                                         >

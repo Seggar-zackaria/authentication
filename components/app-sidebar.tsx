@@ -70,7 +70,7 @@ const adminRole = [
             },
           {
             title: "View Flight",
-            url: "/dashboard/admin/flight/view",
+            url: "/dashboard/admin/flight",
           },
         ],
       },
@@ -82,7 +82,7 @@ const adminRole = [
 
           {
             title: "View Booking",
-            url: "/dashboard/admin/booking/view",
+            url: "/dashboard/admin/booking",
           },
             {
               title: "Add Booking",

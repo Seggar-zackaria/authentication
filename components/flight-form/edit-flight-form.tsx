@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { useCallback, useState } from "react";
+import { useCallback, useState, useEffect } from "react";
 import { flightSchema } from "@/schemas";
 import { Button } from "@/components/ui/button";
 import {
@@ -23,7 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { addFlight } from "@/actions/flight";
+import { updateFlight, getFlight } from "@/actions/flight";
 import { Calendar } from "@/components/ui/calendar";
 import {
   Popover,
@@ -35,14 +35,20 @@ import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { FlightFormValues } from "@/lib/definitions";
 import { AirlineSelect } from "./airline-select";
-import { FlightForm } from "@/components/FlightForm";
+import { useRouter } from "next/navigation";
 
-export default function AddFlightForm() {
+interface EditFlightFormProps {
+  flightId: string;
+}
+
+export default function EditFlightForm({ flightId }: EditFlightFormProps) {
   const [error, setError] = useState<string | undefined>();
   const [success, setSuccess] = useState<string | undefined>();
   const [loading, setLoading] = useState(false);
+  const [isLoadingFlight, setIsLoadingFlight] = useState(true);
+  const router = useRouter();
 
-  // Initialize form at top level
+  // Initialize form
   const form = useForm<FlightFormValues>({
     resolver: zodResolver(flightSchema),
     defaultValues: {
@@ -60,6 +66,52 @@ export default function AddFlightForm() {
     },
   });
 
+  // Fetch flight data
+  useEffect(() => {
+    const loadFlightData = async () => {
+      try {
+        setIsLoadingFlight(true);
+        const response = await getFlight(flightId);
+        
+        if (response.status === 200 && response.data) {
+          const flight = response.data;
+          
+          // Format date and time for form
+          const departureDate = new Date(flight.departureTime);
+          const arrivalDate = new Date(flight.arrivalTime);
+          
+          const formattedDate = format(departureDate, "yyyy-MM-dd");
+          const formattedDepartureTime = format(departureDate, "HH:mm");
+          const formattedArrivalTime = format(arrivalDate, "HH:mm");
+          
+          // Set form values
+          form.reset({
+            flightNumber: flight.flightNumber,
+            departureCity: flight.departureCity,
+            arrivalCity: flight.arrivalCity,
+            date: formattedDate,
+            airline: flight.airline,
+            price: flight.price,
+            duration: flight.duration,
+            stops: flight.stops,
+            departureTime: formattedDepartureTime,
+            arrivalTime: formattedArrivalTime,
+            status: flight.status,
+          });
+        } else {
+          setError("Flight not found");
+        }
+      } catch (error) {
+        console.error("Error loading flight:", error);
+        setError("Failed to load flight data");
+      } finally {
+        setIsLoadingFlight(false);
+      }
+    };
+
+    loadFlightData();
+  }, [flightId, form]);
+
   const isFormValid = form.formState.isValid;
 
   const onSubmit = useCallback(async (values: FlightFormValues) => {
@@ -68,23 +120,28 @@ export default function AddFlightForm() {
     setLoading(true);
 
     try {
-      const response = await addFlight(values);
+      const response = await updateFlight(flightId, values);
       
-      if (response.status === 201) {
+      if (response.status === 200) {
         setSuccess(response.message);
-        form.reset();
-      } else if (response.status === 400 && response.error === "Flight number already exists") {
-        setError("A flight with this number already exists on this date");
+        setTimeout(() => {
+          router.push("/dashboard/admin/flight");
+        }, 1500);
       } else {
-        setError(response.error || "Failed to create flight");
+        setError(response.error || "Failed to update flight");
       }
     } catch (error) {
-      console.error("Submission error:", error);
+      console.error("Update error:", error);
       setError("Something went wrong!");
     } finally {
       setLoading(false);
     }
-  }, [form]);
+  }, [flightId, router]);
+
+  if (isLoadingFlight) {
+    // TODO: Add a skeleton loader
+    return <div className="flex justify-center items-center min-h-[400px]">Loading flight data...</div>;
+  }
 
   return (
     <div className="w-full">
@@ -180,9 +237,6 @@ export default function AddFlightForm() {
                         mode="single"
                         selected={field.value ? new Date(field.value) : undefined}
                         onSelect={(date) => field.onChange(date?.toISOString().split('T')[0])}
-                        disabled={(date) =>
-                          date <= new Date() || date < new Date("1900-01-01")
-                        }
                         initialFocus
                       />
                     </PopoverContent>
@@ -305,7 +359,6 @@ export default function AddFlightForm() {
                 </FormItem>
               )}
             />
-            <FlightForm />
           </div>
 
           <FormError message={error} />
@@ -319,10 +372,10 @@ export default function AddFlightForm() {
               !isFormValid && "opacity-50 cursor-not-allowed"
             )}
           >
-            {loading ? "Adding Flight..." : "Add Flight"}
+            {loading ? "Updating Flight..." : "Update Flight"}
           </Button>
         </form>
       </Form>
     </div>
   );
-}
+} 

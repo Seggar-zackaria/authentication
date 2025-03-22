@@ -32,18 +32,20 @@ interface DataTableProps<TData, TValue> {
   data: TData[]
   initialSorting?: SortingState
   initialFilters?: ColumnFiltersState
+  link?: string
+  filterColumn?: string
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
   initialSorting = [],
-  initialFilters = []
+  initialFilters = [],
+  link,
+  filterColumn,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>(initialSorting)
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(
-    initialFilters
-  )
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(initialFilters)
 
   const table = useReactTable({
     data,
@@ -56,35 +58,33 @@ export function DataTable<TData, TValue>({
     getFilteredRowModel: getFilteredRowModel(),
     state: {
       sorting,
-      columnFilters
+      columnFilters,
     },
-    initialState: {
-      pagination: {
-        pageSize: 10,
-        pageIndex: 0
-      }
-    }
   })
 
   return (
-    <>
+    <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <div className="flex items-center py-4">
-          <Input
-            placeholder="Search"
-            value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
-            onChange={(e) => table.getColumn("name")?.setFilterValue(e.target.value)}
-            className="max-w-sm"
+        <div className="flex items-center gap-2">
+          {filterColumn && table.getColumn(filterColumn) && (
+            <Input
+              placeholder={`Filter ${filterColumn}...`}
+              value={(table.getColumn(filterColumn)?.getFilterValue() as string) ?? ""}
+              onChange={(event) =>
+                table.getColumn(filterColumn)?.setFilterValue(event.target.value)
+              }
+              className="max-w-sm"
             />
+          )}
         </div>
-        <div>
-          <Link href={'/dashboard/hotel/add'}>
-            <Button variant="outline" size={'lg'}>
-              <PlusIcon />
-              Add Hotel
+        {link && (
+          <Link href={link}>
+            <Button>
+              <PlusIcon className="h-4 w-4" />
+              Add New
             </Button>
-          </Link>  
-        </div>
+          </Link>
+        )}
       </div>
       <div className="rounded-md border">
         <Table>
@@ -129,7 +129,7 @@ export function DataTable<TData, TValue>({
         </Table>
       </div>
       <DataTablePagination table={table} />
-    </>
+    </div>
   )
 }
 

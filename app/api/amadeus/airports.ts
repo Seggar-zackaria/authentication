@@ -1,5 +1,5 @@
-import { NextResponse } from "next/server";
-import axios from "axios";
+import { NextResponse } from 'next/server';
+import axios from 'axios';
 
 interface LocationResponse {
   data: Array<{
@@ -17,12 +17,10 @@ interface LocationResponse {
   }>;
 }
 
-// Amadeus API configuration
 const AMADEUS_API_URL = "https://test.api.amadeus.com";
 const AMADEUS_CLIENT_ID = process.env.AMADEUS_CLIENT_ID;
 const AMADEUS_CLIENT_SECRET = process.env.AMADEUS_CLIENT_SECRET;
 
-// Function to get Amadeus API token
 async function getAmadeusToken() {
   try {
     const response = await axios.post(
@@ -48,41 +46,32 @@ async function getAmadeusToken() {
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const keyword = searchParams.get('keyword');
-  const subType = 'AIRPORT'; // Fixed to only fetch airports
-  const countryCode = searchParams.get('countryCode');
-  const page = parseInt(searchParams.get('page') || '0', 10);
 
   if (!keyword) {
     return NextResponse.json({ locations: [] });
   }
 
   try {
-    // Get authentication token
     const token = await getAmadeusToken();
-    
-    // Prepare query parameters
-    const params: Record<string, string | number> = {
-      keyword,
-      subType,
-      "page[offset]": page * 10
-    };
-
-    if (countryCode) {
-      params.countryCode = countryCode;
-    }
-
-    // Make the API request
     const response = await axios.get<LocationResponse>(
       `${AMADEUS_API_URL}/v1/reference-data/locations`,
       {
-        params,
+        params: {
+          keyword,
+          subType: 'CITY,AIRPORT'
+        },
         headers: {
           Authorization: `Bearer ${token}`
         }
       }
     );
 
-    return NextResponse.json({ locations: response.data.data });
+    const locations = response.data.data.map(location => ({
+      value: location.iataCode,
+      label: `${location.name}, ${location.address.cityName}`
+    }));
+
+    return NextResponse.json({ locations });
   } catch (error) {
     console.error('Location search error:', error);
     return NextResponse.json({ error: 'Failed to fetch locations' }, { status: 500 });

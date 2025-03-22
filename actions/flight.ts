@@ -165,7 +165,7 @@ export async function deleteFlight(id: string) {
 export async function getFlight(id: string) {
   try {
     const flight = await db.flight.findUnique({
-      where: { id },
+      where: { id: id },
     });
 
     if (!flight) {
@@ -194,6 +194,20 @@ export async function getAllFlights() {
       orderBy: {
         createdAt: "desc",
       },
+
+      select: {
+        id: true,
+        flightNumber: true,
+        departureCity: true,
+        arrivalCity: true,
+        departureTime: true,
+        arrivalTime: true,
+        status: true,
+        price: true,
+        duration: true,
+        stops: true,
+        airline: true
+      }
     });
 
     return {

@@ -8,7 +8,19 @@ import { UserRole } from "@prisma/client";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(db),
-  session: { strategy: "jwt" },
+  session: { strategy: "jwt", maxAge: 30 * 60},
+  cookies: {
+    sessionToken: {
+      name: `__Secure-next-auth.session-token`,
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: true,
+        maxAge: 30 * 60 // 30 minutes
+      } 
+    }
+  },
   ...authConfig,
   events: {
     async linkAccount({ user }) {
@@ -24,7 +36,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (account?.provider !== "credentials") return true;
       if (!user.id) return false;
       const existingUser = await getUserById(user.id);
-      console.log("SignIn callback:", { user, account});
       // Prevent sign in if user doesn't exist or email isn't verified
       if (!existingUser?.emailVerified) {
         return false;

@@ -2,18 +2,12 @@
 import type React from "react";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { redirect } from "next/navigation";
-import { useSession } from "next-auth/react";
 export default  function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const session = useSession();
-  if (!session) {
-    redirect("/auth/login");
-  }
-
+ 
   return (
     <SidebarProvider>
       <AppSidebar />
