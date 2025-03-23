@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -32,10 +33,9 @@ import {
 } from "@/components/ui/popover";
 import { CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { format } from "date-fns";
 import { FlightFormValues } from "@/lib/definitions";
-import { AirlineSelect } from "./airline-select";
-import { FlightForm } from "@/components/FlightForm";
+import { AirportSelect } from "./airport-select";
+import { format, format as formatDate } from "date-fns";
 
 export default function AddFlightForm() {
   const [error, setError] = useState<string | undefined>();
@@ -98,7 +98,11 @@ export default function AddFlightForm() {
                 <FormItem>
                   <FormLabel>Flight Number</FormLabel>
                   <FormControl>
-                    <Input {...field} placeholder="Enter flight number" />
+                    <Input 
+                      {...field} 
+                      placeholder="Enter flight number"
+                      onChange={(e) => field.onChange(e.target.value.toUpperCase())}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -108,15 +112,16 @@ export default function AddFlightForm() {
             <FormField
               control={form.control}
               name="airline"
-              render={({ field: { onChange, value } }) => (
+              render={({ field }) => (
                 <FormItem>
                   <FormLabel>Airline</FormLabel>
                   <FormControl>
-                    <AirlineSelect 
-                      value={value || ""}
-                      onChange={onChange}
-                    />
+                      <Input 
+                        {...field}
+                        placeholder="Enter the Airline Company"
+                      />
                   </FormControl>
+                  <FormDescription>add an airline ex: airAlgerie</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -129,7 +134,11 @@ export default function AddFlightForm() {
                 <FormItem>
                   <FormLabel>Departure City</FormLabel>
                   <FormControl>
-                    <Input {...field} placeholder="Enter departure city" />
+                    <AirportSelect
+                      value={field.value || ""}
+                      onChange={field.onChange}
+                      placeholder="Search departure airport..."
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -143,7 +152,11 @@ export default function AddFlightForm() {
                 <FormItem>
                   <FormLabel>Arrival City</FormLabel>
                   <FormControl>
-                    <Input {...field} placeholder="Enter arrival city" />
+                    <AirportSelect
+                      value={field.value || ""}
+                      onChange={field.onChange}
+                      placeholder="Search arrival airport..."
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -166,8 +179,8 @@ export default function AddFlightForm() {
                             !field.value && "text-muted-foreground"
                           )}
                         >
-                          {field.value ? (
-                            format(new Date(field.value), "PPP")
+                           {field.value ? (
+                            format(field.value, "MMMM d, yyyy")
                           ) : (
                             <span>Pick a date</span>
                           )}
@@ -180,10 +193,9 @@ export default function AddFlightForm() {
                         mode="single"
                         selected={field.value ? new Date(field.value) : undefined}
                         onSelect={(date) => field.onChange(date?.toISOString().split('T')[0])}
-                        disabled={(date) =>
-                          date <= new Date() || date < new Date("1900-01-01")
-                        }
+                        disabled={(date) => date < new Date()}
                         initialFocus
+
                       />
                     </PopoverContent>
                   </Popover>
@@ -197,7 +209,7 @@ export default function AddFlightForm() {
               name="price"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Price</FormLabel>
+                  <FormLabel>Price (DZD)</FormLabel>
                   <FormControl>
                     <Input 
                       type="number" 
@@ -305,7 +317,6 @@ export default function AddFlightForm() {
                 </FormItem>
               )}
             />
-            <FlightForm />
           </div>
 
           <FormError message={error} />
@@ -313,7 +324,7 @@ export default function AddFlightForm() {
 
           <Button
             type="submit"
-            disabled={loading || !isFormValid}
+            disabled={loading}
             className={cn(
               "w-full",
               !isFormValid && "opacity-50 cursor-not-allowed"

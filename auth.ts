@@ -8,7 +8,7 @@ import { UserRole } from "@prisma/client";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(db),
-  session: { strategy: "jwt", maxAge: 30 * 60},
+  session: { strategy: "jwt", maxAge: 60 * 60 * 24},
   cookies: {
     sessionToken: {
       name: `__Secure-next-auth.session-token`,
@@ -17,7 +17,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         sameSite: "lax",
         path: "/",
         secure: true,
-        maxAge: 30 * 60 // 30 minutes
+          maxAge: 60 * 60 * 24 // 1 day
       } 
     }
   },

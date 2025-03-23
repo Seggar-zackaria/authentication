@@ -294,7 +294,7 @@ export const FlightColumn: ColumnDef<Flight>[] = [
             if (stops === undefined || stops === null || isNaN(stops)) {
                 return <div>N/A</div>
             }
-            return <div>{stops} stop{stops !== 1 ? 's' : ''}</div>
+            return <div>{stops !== 1 ? <Badge variant={'success'}>Direct</Badge> : `${stops} stops`}</div>
         }
     },
     {

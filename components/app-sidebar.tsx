@@ -44,11 +44,7 @@ const adminRole = [
             {
               title: "Add Hotel",
               url: "/dashboard/admin/hotel/add",
-            },
-            {
-              title: "Edit Hotel",
-              url: "/dashboard/admin/hotel/edit",
-            },
+            },     
           {
             title: "View Hotel",
             url: "/dashboard/admin/hotel",
@@ -63,10 +59,6 @@ const adminRole = [
             {
               title: "Add Flight",
               url: "/dashboard/admin/flight/add",
-            },
-            {
-              title: "Edit Flight",
-              url: "/dashboard/admin/flight/edit",
             },
           {
             title: "View Flight",
@@ -87,10 +79,6 @@ const adminRole = [
             {
               title: "Add Booking",
                 url: "/dashboard/admin/booking/add",
-            },
-            {
-              title: "Edit Booking",
-              url: "/dashboard/admin/booking/edit",
             },
         ],
       },

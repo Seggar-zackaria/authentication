@@ -34,7 +34,6 @@ import { CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { FlightFormValues } from "@/lib/definitions";
-import { AirlineSelect } from "./airline-select";
 import { useRouter } from "next/navigation";
 
 interface EditFlightFormProps {
@@ -162,18 +161,20 @@ export default function EditFlightForm({ flightId }: EditFlightFormProps) {
               )}
             />
 
-            <FormField
+           
+                <FormField
               control={form.control}
               name="airline"
               render={({ field: { onChange, value } }) => (
                 <FormItem>
                   <FormLabel>Airline</FormLabel>
                   <FormControl>
-                    <AirlineSelect 
-                      value={value || ""}
-                      onChange={onChange}
-                    />
+                      <Input 
+                        {...field}
+                        placeholder="Enter the Airline Company"
+                      />
                   </FormControl>
+                  <FormDescription>update an airline ex: airAlgerie</FormDescription>
                   <FormMessage />
                 </FormItem>
               )}
@@ -237,6 +238,9 @@ export default function EditFlightForm({ flightId }: EditFlightFormProps) {
                         mode="single"
                         selected={field.value ? new Date(field.value) : undefined}
                         onSelect={(date) => field.onChange(date?.toISOString().split('T')[0])}
+                        disabled={(date) =>
+                          date <= new Date() || date < new Date("1900-01-01")
+                        }
                         initialFocus
                       />
                     </PopoverContent>
