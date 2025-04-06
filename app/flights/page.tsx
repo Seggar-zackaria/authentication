@@ -21,7 +21,6 @@ export default function FlightSearchPage() {
     setError(null);
 
     try {
-      // Format date as YYYY-MM-DD without using date-fns
       const date = values.departureDate;
       const formattedDate = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
       
@@ -36,18 +35,16 @@ export default function FlightSearchPage() {
       
       const response = await fetch(`/api/amadeus/flights?${queryParams}`);
       
-      // Check if the response is OK before parsing JSON
       if (!response.ok) {
         const errorText = await response.text();
         console.error("Search error status:", response.status);
         console.error("Search error text:", errorText);
         
         try {
-          // Try to parse as JSON, but don't throw if it's not JSON
           const errorData = JSON.parse(errorText);
           setError(errorData.error || "An error occurred during the flight search");
-        } catch (parseError) {
-          // If it's not JSON, use the raw text
+        } catch (error) {
+          console.log(error)
           setError(`Search failed: ${errorText || response.statusText}`);
         }
         

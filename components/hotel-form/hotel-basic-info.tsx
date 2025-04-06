@@ -52,10 +52,9 @@ export function HotelBasicInfo({ form }: HotelFormComponentProps) {
             <FormLabel>Price per Night</FormLabel>
             <FormControl>
               <Input 
-                type="number"
-                min="0"
+                type="tel"
                 {...field}
-                value={field.value ?? 0}
+                value={field.value}
                 onChange={(e) => field.onChange(Number(e.target.value))}
                 placeholder="0.00"
               />

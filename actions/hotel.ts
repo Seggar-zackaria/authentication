@@ -90,6 +90,7 @@ export async function editHotel(
     // Handle images separately
     let imageUrls = existingHotel.images;
     if (values.images && values.images.length > 0) {
+      // TODO: Check what i can do with this func
       // Process new images only if provided
       // Your image processing logic here
     }

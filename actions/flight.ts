@@ -48,7 +48,6 @@ export async function addFlight(values: z.infer<typeof flightSchema>): Promise<F
 
     const { date, departureTime, arrivalTime, ...flightData } = validatedFields.data;
 
-    // Parse dates using date-fns (more reliable than new Date())
     const departureDateTime = parse(
       `${date} ${departureTime}`,
       'yyyy-MM-dd HH:mm',

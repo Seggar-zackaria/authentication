@@ -4,10 +4,10 @@ import { SessionProvider } from "next-auth/react";
 import "./globals.css";
 
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
+// const geistSans = Geist({
+//   variable: "--font-geist-sans",
+//   subsets: ["latin"],
+// });
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -24,7 +24,7 @@ export default function RootLayout({
     <SessionProvider refetchInterval={0} refetchOnWindowFocus={false}>
       <html lang="en">
         <body
-          className={`${geistSans.variable} antialiased`}
+          className={`antialiased`}
           >
           {children}
         </body>

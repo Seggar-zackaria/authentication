@@ -1,16 +1,21 @@
 import { getUsers } from "@/lib/data";
+import { userColumn } from "@/components/table-of-data/columns";
+import { DataTable } from "@/components/table-of-data/data-table";
 import { PageWrapper } from "@/components/PageWrapper";
-import { UsersTable } from "@/components/_component/UsersTable";
 
-export default async function CustomerPage() {
+export default async function HotelPage() {
   const users = await getUsers();
 
   return (
-    <PageWrapper>
-    
-        <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-          <UsersTable users={users} /> 
-        </div>
-    </PageWrapper>
+    <>
+      <PageWrapper >
+        <DataTable 
+          columns={userColumn} 
+          data={users}
+          link="/dashboard/admin/customer/add"
+          filterColumn="name"
+        />
+      </PageWrapper>
+    </>
   );
 }

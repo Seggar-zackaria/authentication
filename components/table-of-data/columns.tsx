@@ -1,6 +1,6 @@
 "use client"
 import { ColumnDef } from "@tanstack/react-table";
-import { Hotel, FlightFormValues } from "@/lib/definitions";
+import { Hotel, User } from "@/lib/definitions";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@radix-ui/react-hover-card";
 import { Badge } from "@/components/ui/badge";
 import { FaArrowRight, FaStar } from "react-icons/fa";
@@ -31,6 +31,7 @@ import Link from "next/link";
 import { format as dateFormat } from "date-fns";
 import { deleteFlight } from "@/actions/flight";
 import React from "react";
+import Image from "next/image";
 
 function StateCell({ row }: { row: { original: Hotel } }) {
   const { getStateByCode } = useLocation();
@@ -133,7 +134,7 @@ export const Hotelcolumns: ColumnDef<Hotel>[] = [
                             Copy hotel name
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        <Link href={`/dashboard/hotel/edit/${hotel.id}`}>
+                        <Link href={`/dashboard/admin/hotel/edit/${hotel.id}`}>
                             <DropdownMenuItem>
                                     Edit
                             </DropdownMenuItem>
@@ -294,7 +295,7 @@ export const FlightColumn: ColumnDef<Flight>[] = [
             if (stops === undefined || stops === null || isNaN(stops)) {
                 return <div>N/A</div>
             }
-            return <div>{stops !== 1 ? <Badge variant={'success'}>Direct</Badge> : `${stops} stops`}</div>
+            return <div>{stops === 0 ? <Badge variant={'success'}>Direct</Badge> : `${stops} stops`}</div>
         }
     },
     {
@@ -347,6 +348,97 @@ export const FlightColumn: ColumnDef<Flight>[] = [
                                                 const result = await deleteFlight(flight.id);
                                                 if (result.status !== 200) {
                                                     alert(result.error || result.message || "Failed to delete flight");
+                                                }
+                                            }}
+                                        >
+                                            Delete
+                                        </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                </AlertDialogContent>
+                            </AlertDialog>
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+            </div>
+        }
+    }
+]
+
+export const userColumn: ColumnDef<User>[] = [
+    {
+        header: 'name',
+        accessorKey: "name"
+    },
+    {
+        header: 'image',
+        accessorKey: 'image',
+        cell: ({ row }) => {
+            const imageUrl = row.original.image;
+            return imageUrl ? (
+                <div className="relative h-10 w-10">
+                    <Image
+                        src={imageUrl}
+                        alt={`${row.original.name}'s profile picture`}
+                        fill
+                        className="rounded-full object-cover"
+                        sizes="40px"
+                    />
+                </div>
+            ) : (
+                <div className="h-10 w-10 rounded-full bg-muted" />
+            );
+        }
+    },
+    {
+        id: "actions",
+        cell: ({ row }) => {
+            const flight = row.original
+            return <div className="text-left">
+                <DropdownMenu>
+                    <DropdownMenuTrigger>
+                        <div className="size-8 p-0 inline-flex items-center justify-center rounded-md border border-transparent hover:bg-neutral-100 hover:border hover:border-neutral-400">
+                            <span className="sr-only">open menu</span>
+                            <MoreHorizontal className="w-4 h-4" />
+                        </div>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                        <DropdownMenuItem
+                            onClick={() => {
+                                navigator.clipboard.writeText(flight?.flightNumber || "")
+                            }}
+                        >
+                            Copy flight number
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <Link href={`/dashboard/admin/flight/edit/${flight.id}`}>
+                            <DropdownMenuItem>
+                                    Edit
+                            </DropdownMenuItem>
+                        </Link>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onSelect={(e)=> e.preventDefault()}>
+                            <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                    <span>
+                                        Delete
+                                    </span>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                        <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                                        <AlertDialogDescription>
+                                            This action cannot be undone. This will permanently delete the flight.
+                                        </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                        <AlertDialogAction
+                                            className="bg-destructive"
+                                            onClick={async () => {
+                                                if (!flight.id) return;
+                                                const result = await deleteFlight(flight.id);
+                                                if (result.status !== 200) {
+                                                    alert(result.error || result.message || "Failed to delete U");
                                                 }
                                             }}
                                         >

@@ -230,7 +230,7 @@ export function AirportSelect({
     const controller = new AbortController();
     const signal = controller.signal;
 
-    const fetchAirports = async () => {
+    const FetchAirports = async () => {
       setLoading(true);
       setError(null);
       
@@ -331,7 +331,7 @@ export function AirportSelect({
       }
     };
 
-    fetchAirports();
+    FetchAirports();
 
     // Cleanup function to abort fetch on unmount or when search changes
     return () => {

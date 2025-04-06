@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -165,12 +166,12 @@ export default function EditFlightForm({ flightId }: EditFlightFormProps) {
                 <FormField
               control={form.control}
               name="airline"
-              render={({ field: { onChange, value } }) => (
+              render={({ field }) => (
                 <FormItem>
                   <FormLabel>Airline</FormLabel>
                   <FormControl>
                       <Input 
-                        {...field}
+                       {...field}
                         placeholder="Enter the Airline Company"
                       />
                   </FormControl>

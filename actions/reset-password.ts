@@ -52,7 +52,7 @@ export const resetPassword = async (
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Use transaction to ensure both operations complete or none
+    // transaction to ensure both operations complete or none
     await db.$transaction([
       db.user.update({
         where: { id: existingUser.id },

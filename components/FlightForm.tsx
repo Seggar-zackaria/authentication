@@ -6,9 +6,9 @@ export function FlightForm() {
     console.log('Selected airline:', value);
   };
 
-  const handleAirportSelect = (value: string) => {
-    console.log('Selected airport:', value);
-  };
+  // const handleAirportSelect = (value: string) => {
+  //   console.log('Selected airport:', value);
+  // };
 
   return (
     <div>

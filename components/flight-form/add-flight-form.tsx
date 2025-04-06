@@ -35,7 +35,7 @@ import { CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { FlightFormValues } from "@/lib/definitions";
 import { AirportSelect } from "./airport-select";
-import { format, format as formatDate } from "date-fns";
+import { format } from "date-fns";
 
 export default function AddFlightForm() {
   const [error, setError] = useState<string | undefined>();
