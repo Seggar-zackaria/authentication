@@ -91,6 +91,34 @@ export const HotelUpdateSchema = HotelSchema.partial().extend({
   id: z.string(),
 });
 
+export const RoomSchema = z.object({
+  hotelId: z.string().min(1, { message: "Hotel is required" }),
+  type: z.string().min(1, { message: "Room type is required" }),
+  description: z.string().min(10, { message: "Description must be at least 10 characters" }),
+  capacity: z.number().min(1, { message: "Capacity must be at least 1" }),
+  price: z.number().positive({ message: "Price is required" }),
+  available: z.boolean().default(true),
+  amenities: z.array(z.string()).min(1, { message: "At least one amenity is required" }),
+  images: z
+    .any()
+    .refine((files) => {
+      if (typeof window === 'undefined') {
+        return Array.isArray(files);
+      }
+      return files instanceof FileList || Array.isArray(files);
+    }, "Invalid file input")
+    .transform((files) => {
+      if (typeof window !== 'undefined' && files instanceof FileList) {
+        return Array.from(files);
+      }
+      return files;
+    })
+    .default([])
+});
+
+export const RoomUpdateSchema = RoomSchema.partial().extend({
+  id: z.string()
+});
 
 export const flightSchema = z.object({
   flightNumber: z

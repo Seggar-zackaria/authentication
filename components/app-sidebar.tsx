@@ -9,6 +9,7 @@ import {
   Plane,
   Hotel,
   Calendar,
+  Bed,
 } from "lucide-react";
 
 import { NavMain } from "@/components/nav-main";
@@ -52,6 +53,22 @@ const adminRole = [
         ],
       },
       {
+        title: "Room",
+        url: "#",
+        icon: Bed ,
+        isActive: true,
+        items: [
+            {
+              title: "Add Room",
+              url: "/dashboard/admin/rooms/add",
+            },     
+          {
+            title: "View Room",
+            url: "/dashboard/admin/rooms",
+          }
+        ],
+      },
+      {
         title: "Flight",
         url: "#",
         icon: Plane,
@@ -85,19 +102,24 @@ const adminRole = [
     ]
   const userRole = [
   {
+    name: "Book a Voyage",
+    url: "/dashboard/voyage-booking",
+    icon: Map,
+  },
+  {
     name: "Book a Hotel",
     url: "/dashboard/Hotel-Booking",
     icon: Frame,
   },
   {
-    name: "book a flight",
+    name: "Book a Flight",
     url: "/dashboard/flight-booking",
     icon: PieChart,
   },
   {
-    name: "my Booking",
+    name: "My Bookings",
     url: "/dashboard/booked-travel",
-    icon: Map,
+    icon: Calendar,
   },
 ]
 

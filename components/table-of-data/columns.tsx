@@ -14,7 +14,7 @@ import {
     DropdownMenuTrigger,
   } from "@/components/ui/dropdown-menu"
   import { deleteHotel } from "@/actions/hotel";
-import { MoreHorizontal } from "lucide-react";
+import { Bed, MoreHorizontal } from "lucide-react";
 import { DataTableColumnHeader } from "@/components/table-of-data/Column-header";
 import {
   AlertDialog,
@@ -32,6 +32,8 @@ import { format as dateFormat } from "date-fns";
 import { deleteFlight } from "@/actions/flight";
 import React from "react";
 import Image from "next/image";
+import { deleteRoom } from "@/actions/room";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 function StateCell({ row }: { row: { original: Hotel } }) {
   const { getStateByCode } = useLocation();
@@ -454,3 +456,167 @@ export const userColumn: ColumnDef<User>[] = [
         }
     }
 ]
+
+export type Room = {
+    id: string;
+    hotelId: string;
+    hotelName: string;
+    type: string;
+    description: string;
+    capacity: number;
+    price: number;
+    available: boolean;
+    amenities: string[];
+    images: string[];
+  };
+
+export const RoomColumns: ColumnDef<Room>[] = [
+    {
+        accessorKey: "images",
+        header: 'Images',
+        cell: ({ row }) => {
+          const images = row.getValue("images") as string[];
+          return (
+            <div className="flex -space-x-2">
+              {images.slice(0, 1).map((image, index) => (
+                <Avatar key={`${row.original.id}-image-${index}`} className="border-2 border-background">
+                  <AvatarImage src={image} alt={`Room ${index + 1}`} />
+                  <AvatarFallback><Bed className="w-4 h-4" /></AvatarFallback>
+                </Avatar>
+              ))}
+            </div>
+          );
+        },
+      },
+    {
+      accessorKey: "type",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Room Type" />
+      ),
+    },
+    {
+      accessorKey: "hotelName",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Hotel" />
+      ),
+    },
+    {
+      accessorKey: "capacity",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Capacity" />
+      ),
+    },
+    {
+      accessorKey: "price",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Price" />
+      ),
+      cell: ({ row }) => {
+        const price = parseFloat(row.getValue("price"));
+        const formatted = new Intl.NumberFormat("fr-DZ", {
+          style: "currency",
+          currency: "DZD",
+        }).format(price);
+  
+        return <div className="font-medium">{formatted}</div>;
+      },
+    },
+    {
+      accessorKey: "available",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Status" />
+      ),
+      cell: ({ row }) => {
+        const available = row.getValue("available");
+  
+        return (
+          <Badge variant={available ? "default" : "destructive"}>
+            {available ? "Available" : "Unavailable"}
+          </Badge>
+        );
+      },
+    },
+    {
+        accessorKey: "amenities",
+        header: ({ column }) => (
+            <DataTableColumnHeader column={column} title="Amenities" />
+          ),
+        cell: ({ row }) => {
+            const amenities = row.original.amenities
+            const amenitiesLength = amenities.length
+            return <HoverCard>
+                <HoverCardTrigger>
+                    <Button variant="link" size="lg" className="text-left font-bold">{amenitiesLength} </Button>
+                </HoverCardTrigger>
+                <HoverCardContent className="w-fit flex flex-wrap gap-2 border border-neutral-400 rounded-md p-6 bg-muted text-primary">
+                    {amenities.map((amenity) => (
+                            <Badge key={amenity}>{amenity}</Badge>
+                    ))}
+                </HoverCardContent>
+            </HoverCard>
+        }
+    },
+    {
+        id: "actions",
+        cell: ({ row }) => {
+            const room = row.original
+            return <div className="text-left">
+                <DropdownMenu>
+                    <DropdownMenuTrigger>
+                        <div className="size-8 p-0 inline-flex items-center justify-center rounded-md border border-transparent hover:bg-neutral-100 hover:border hover:border-neutral-400">
+                            <span className="sr-only">open menu</span>
+                            <MoreHorizontal className="w-4 h-4" />
+                        </div>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                        <DropdownMenuItem
+                            onClick={() => {
+                            }}
+                        >
+                            Copy room number
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <Link href={`/dashboard/admin/rooms/edit/${room.id}`}>
+                            <DropdownMenuItem>
+                                    Edit
+                            </DropdownMenuItem>
+                        </Link>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onSelect={(e)=> e.preventDefault()}>
+                            <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                    <span>
+                                        Delete
+                                    </span>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                        <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                                        <AlertDialogDescription>
+                                            This action cannot be undone. This will permanently delete the room.
+                                        </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                        <AlertDialogAction
+                                            className="bg-destructive"
+                                            onClick={async () => {
+                                                if (!room.id) return;
+                                                const result = await deleteRoom(room.id);
+                                                if (result.status !== 200) {
+                                                    alert(result.error || result.message || "Failed to delete room");
+                                                }
+                                            }}
+                                        >
+                                            Delete
+                                        </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                </AlertDialogContent>
+                            </AlertDialog>
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
+            </div>
+        }
+    }
+  ]; 
