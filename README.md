@@ -26,7 +26,7 @@ To learn more about Next.js, take a look at the following resources:
 
 - [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
 - [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
+- ![CodeRabbit Pull Request Reviews](https://img.shields.io/coderabbit/prs/github/Seggar-zackaria/authentication?utm_source=oss&utm_medium=github&utm_campaign=Seggar-zackaria%2Fauthentication&labelColor=171717&color=FF570A&link=https%3A%2F%2Fcoderabbit.ai&label=CodeRabbit+Reviews)
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
 
 ## Deploy on Vercel
