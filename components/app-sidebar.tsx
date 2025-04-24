@@ -10,6 +10,7 @@ import {
   Hotel,
   Calendar,
   Bed,
+  User,
 } from "lucide-react";
 
 import { NavMain } from "@/components/nav-main";
@@ -99,6 +100,18 @@ const adminRole = [
             },
         ],
       },
+      {
+        title: "Users",
+        url: "/dashboard/admin/customer",
+        icon: User,
+        items: [
+
+          {
+            title: "view users",
+            url: "/dashboard/admin/customer",
+          },
+        ],
+      },
     ]
   const userRole = [
   {
@@ -124,9 +137,8 @@ const adminRole = [
 ]
 
   return (
-    <Sidebar>
+    <Sidebar collapsible="icon">
       <SidebarHeader>
-
         <TeamSwitcher teams={dashboardURL} />
       </SidebarHeader>
       <SidebarContent>

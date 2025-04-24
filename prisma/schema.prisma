@@ -100,6 +100,7 @@ model Room {
   hotel       Hotel     @relation(fields: [hotelId], references: [id], onDelete: Cascade)
   bookings    HotelBooking[]
 
+  @@index([hotelId])
   @@map("rooms")
 }
 
@@ -139,7 +140,6 @@ model HotelBooking {
   checkIn   DateTime
   checkOut  DateTime
   status    BookingStatus @default(PENDING)
-  totalPrice Float
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
@@ -147,6 +147,9 @@ model HotelBooking {
   hotel     Hotel   @relation(fields: [hotelId], references: [id], onDelete: Cascade)
   room      Room    @relation(fields: [roomId], references: [id], onDelete: Cascade)
 
+  @@index([userId])
+  @@index([hotelId])
+  @@index([roomId])
   @@map("hotel_bookings")
 }
 
@@ -163,6 +166,8 @@ model FlightBooking {
   user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   flight    Flight  @relation(fields: [flightId], references: [id], onDelete: Cascade)
 
+  @@index([userId])
+  @@index([flightId])
   @@map("flight_bookings")
 }
 

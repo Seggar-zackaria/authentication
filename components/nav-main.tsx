@@ -67,15 +67,6 @@ export function NavMain({
             </SidebarMenuItem>
           </Collapsible>
         ))}
-        <SidebarMenuButton tooltip={'Customer'}>
-                 <Link href="/dashboard/admin/customer" className="flex items-center gap-4 w-full justify-between">
-                    <div className="flex items-center gap-4">
-                      <User className="size-4"/>
-                      <span >Customer</span>
-                    </div>
-                    <ChevronRight className="size-4"/>
-                 </Link>
-        </SidebarMenuButton>
       </SidebarMenu>
     </SidebarGroup>
   )

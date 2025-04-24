@@ -13,7 +13,7 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
   } from "@/components/ui/dropdown-menu"
-  import { deleteHotel } from "@/actions/hotel";
+import { deleteHotel } from "@/actions/hotel";
 import { Bed, MoreHorizontal } from "lucide-react";
 import { DataTableColumnHeader } from "@/components/table-of-data/Column-header";
 import {
@@ -28,12 +28,14 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import Link from "next/link";
-import { format as dateFormat } from "date-fns";
+import { format } from "date-fns";
 import { deleteFlight } from "@/actions/flight";
 import React from "react";
 import Image from "next/image";
 import { deleteRoom } from "@/actions/room";
+import { deleteUser } from "@/actions/user";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { toast } from "sonner";
 
 function StateCell({ row }: { row: { original: Hotel } }) {
   const { getStateByCode } = useLocation();
@@ -235,10 +237,10 @@ export const FlightColumn: ColumnDef<Flight>[] = [
             return (
                 <div className="flex flex-col gap-1">
                     <div className="text-sm">
-                        Departure: {departureTime ? dateFormat(new Date(departureTime), "PPp") : "N/A"}
+                        Departure: {departureTime ? format(new Date(departureTime), "PPp") : "N/A"}
                     </div>
                     <div className="text-sm text-muted-foreground">
-                        Arrival: {arrivalTime ? dateFormat(new Date(arrivalTime), "PPp") : "N/A"}
+                        Arrival: {arrivalTime ? format(new Date(arrivalTime), "PPp") : "N/A"}
                     </div>
                 </div>
             )
@@ -368,11 +370,7 @@ export const FlightColumn: ColumnDef<Flight>[] = [
 
 export const userColumn: ColumnDef<User>[] = [
     {
-        header: 'name',
-        accessorKey: "name"
-    },
-    {
-        header: 'image',
+        header: "Profile Image",
         accessorKey: 'image',
         cell: ({ row }) => {
             const imageUrl = row.original.image;
@@ -392,70 +390,122 @@ export const userColumn: ColumnDef<User>[] = [
         }
     },
     {
+        header: ({ column }) => (
+            <DataTableColumnHeader 
+                column={column} 
+                title="Name" 
+            />
+        ),
+        accessorKey: "name"
+    },
+    {
+        header: ({ column }) => (
+            <DataTableColumnHeader 
+                column={column} 
+                title="Email" 
+            />
+        ),
+        accessorKey: "email"
+    },
+    {
+        header: ({ column }) => (
+            <DataTableColumnHeader 
+                column={column} 
+                title="Role" 
+            />
+        ),
+        accessorKey: "role",
+        cell: ({ row }) => {
+            const role = row.getValue("role") as string;
+            return (
+                <Badge variant={role === "ADMIN" ? "default" : "secondary"}>
+                    {role?.toLowerCase()}
+                </Badge>
+            );
+        }
+    },
+   
+    {
+        header: "Created At",
+        accessorKey: "createdAt",
+        cell: ({ row }) => {
+            const date = row.original.createdAt;
+            return date ? (
+                <div className="text-sm text-muted-foreground">
+                    {format(new Date(date), "PP")}
+                </div>
+            ) : null;
+        }
+    },
+    {
         id: "actions",
         cell: ({ row }) => {
-            const flight = row.original
-            return <div className="text-left">
-                <DropdownMenu>
-                    <DropdownMenuTrigger>
-                        <div className="size-8 p-0 inline-flex items-center justify-center rounded-md border border-transparent hover:bg-neutral-100 hover:border hover:border-neutral-400">
-                            <span className="sr-only">open menu</span>
-                            <MoreHorizontal className="w-4 h-4" />
-                        </div>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                        <DropdownMenuItem
-                            onClick={() => {
-                                navigator.clipboard.writeText(flight?.flightNumber || "")
-                            }}
-                        >
-                            Copy flight number
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <Link href={`/dashboard/admin/flight/edit/${flight.id}`}>
-                            <DropdownMenuItem>
-                                    Edit
+            const user = row.original;
+            return (
+                <div className="text-left">
+                    <DropdownMenu>
+                        <DropdownMenuTrigger>
+                            <div className="size-8 p-0 inline-flex items-center justify-center rounded-md border border-transparent hover:bg-neutral-100 hover:border hover:border-neutral-400">
+                                <span className="sr-only">Open menu</span>
+                                <MoreHorizontal className="w-4 h-4" />
+                            </div>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent>
+                            <DropdownMenuItem
+                                onClick={() => {
+                                    navigator.clipboard.writeText(user.email || "");
+                                }}
+                            >
+                                Copy email
                             </DropdownMenuItem>
-                        </Link>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem onSelect={(e)=> e.preventDefault()}>
-                            <AlertDialog>
-                                <AlertDialogTrigger asChild>
-                                    <span>
-                                        Delete
-                                    </span>
-                                </AlertDialogTrigger>
-                                <AlertDialogContent>
-                                    <AlertDialogHeader>
-                                        <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                                        <AlertDialogDescription>
-                                            This action cannot be undone. This will permanently delete the flight.
-                                        </AlertDialogDescription>
-                                    </AlertDialogHeader>
-                                    <AlertDialogFooter>
-                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                        <AlertDialogAction
-                                            className="bg-destructive"
-                                            onClick={async () => {
-                                                if (!flight.id) return;
-                                                const result = await deleteFlight(flight.id);
-                                                if (result.status !== 200) {
-                                                    alert(result.error || result.message || "Failed to delete U");
-                                                }
-                                            }}
-                                        >
+                            <DropdownMenuSeparator />
+                            <Link href={`/dashboard/admin/customer/edit/${user.id}`}>
+                                <DropdownMenuItem>
+                                    Edit
+                                </DropdownMenuItem>
+                            </Link>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                                <AlertDialog>
+                                    <AlertDialogTrigger asChild>
+                                        <span>
                                             Delete
-                                        </AlertDialogAction>
-                                    </AlertDialogFooter>
-                                </AlertDialogContent>
-                            </AlertDialog>
-                        </DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
-            </div>
+                                        </span>
+                                    </AlertDialogTrigger>
+                                    <AlertDialogContent>
+                                        <AlertDialogHeader>
+                                            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                                            <AlertDialogDescription>
+                                                This action cannot be undone. This will permanently delete the user and all associated data.
+                                            </AlertDialogDescription>
+                                        </AlertDialogHeader>
+                                        <AlertDialogFooter>
+                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                            <AlertDialogAction
+                                                className="bg-destructive"
+                                                onClick={async () => {
+                                                    if (!user.id) return;
+                                                    const result = await deleteUser(user.id);
+                                                    if (result.status !== 200) {
+                                                        toast.error(result.error || "Failed to delete user");
+                                                    } else {
+                                                        toast.success(result.success);
+                                                    }
+                                                }}
+                                            >
+                                                Delete
+                                            </AlertDialogAction>
+                                        </AlertDialogFooter>
+                                    </AlertDialogContent>
+                                </AlertDialog>
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </div>
+            );
         }
     }
-]
+];
 
 export type Room = {
     id: string;

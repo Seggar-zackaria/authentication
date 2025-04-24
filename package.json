@@ -75,6 +75,11 @@
     "onlyBuiltDependencies": [
       "@prisma/client",
       "@prisma/engines"
+    ],
+    "ignoredBuiltDependencies": [
+      "esbuild",
+      "prisma",
+      "sharp"
     ]
   }
 }

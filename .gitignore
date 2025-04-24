@@ -22,6 +22,8 @@
 
 # images
 /public/uploads
+/public/assets
+/public/avatars
 
 # rules cursor
 .cursorrules

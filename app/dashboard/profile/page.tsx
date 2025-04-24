@@ -2,30 +2,20 @@ import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { UserEditForm } from "@/components/forms/user-edit-form";
-import { Suspense } from "react";
+import { AvatarDebug } from "@/components/ui/avatar-debug";
 
-interface PageProps {
-  params: {
-    id: string;
-  };
-}
-
-// Default export as the main async Server Component
-export default async function UserEditPage({ params }: PageProps) {
+export default async function ProfilePage() {
   const session = await auth();
 
   if (!session) {
     redirect("/auth/login");
   }
 
-  // Only admin can edit other users
+  const userId = session.user.id;
   const isAdmin = session.user.role === "ADMIN";
-  if (!isAdmin && session.user.id !== params.id) {
-    redirect("/dashboard");
-  }
-  
+
   const user = await db.user.findUnique({
-    where: { id: params.id },
+    where: { id: userId },
     select: {
       id: true,
       name: true,
@@ -46,17 +36,25 @@ export default async function UserEditPage({ params }: PageProps) {
     email: user.email || "",
   };
 
+  // Log image path for debugging
+  console.log("User image path:", user.image);
+
   return (
     <div className="container mx-auto py-10">
       <div className="max-w-2xl mx-auto">
-        <h1 className="text-2xl font-bold mb-6">
-          {isAdmin ? "Edit User" : "Edit Profile"}
-        </h1>
+        <h1 className="text-2xl font-bold mb-6">Edit Profile</h1>
         <UserEditForm 
           user={formattedUser}
           isAdmin={isAdmin}
         />
+        
+        {/* Debug component - can be removed in production */}
+        {process.env.NODE_ENV !== "production" && (
+          <div className="mt-8">
+            <AvatarDebug />
+          </div>
+        )}
       </div>
     </div>
   );
-}
+} 
