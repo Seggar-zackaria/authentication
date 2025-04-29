@@ -22,6 +22,7 @@ import { useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { DEFAULT_LOGIN_REDIRECT } from "@/routes";
 import Link from "next/link";
+import { Eye, EyeOff } from "lucide-react";
 
 const LoginForm = () => {
   const form = useForm<z.infer<typeof LoginSchema>>({
@@ -38,6 +39,7 @@ const LoginForm = () => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [isPending, setIsPending] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const onSubmit = async (values: z.infer<typeof LoginSchema>) => {
     setIsPending(true);
@@ -49,7 +51,6 @@ const LoginForm = () => {
     formData.append("password", values.password);
     formData.append("redirectTo", callBackUrl);
 
-    // Call the Login function with the right shape
     const response = await Login({ values, formData });
 
     if (response.error) {
@@ -60,75 +61,94 @@ const LoginForm = () => {
 
     setIsPending(false);
   };
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
  
   return (
-    <CardWrapper
-      headerLabel="Welcome back"
-      backButtonLabel="Don't have an account?"
-      backButtonHref="/auth/register"
-      showSocial
-    >
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Email</FormLabel>
-                <FormControl>
-                  <Input
-                    {...field}
-                    disabled={isPending}
-                    placeholder="example@ex.com"
-                    className="placeholder:text-neutral-400"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+    <div className="w-full max-w-md">
+      <CardWrapper
+        headerLabel="Login"
+        backButtonLabel="Don't have an account?"
+        backButtonHref="/auth/register"
+        showSocial
+      >
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-sm font-medium">Email</FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      disabled={isPending}
+                      placeholder="Enter your email"
+                      className="h-12"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          <FormField
-            control={form.control}
-            name="password"
-            render={({ field }) => (
-              <FormItem>
-                <div className="flex items-center justify-between">
-                  <FormLabel>Password</FormLabel>
-                  <Button variant="link" size="sm" asChild>
-                    <Link href="/auth/forgot-password">Forgot password?</Link>
-                  </Button>
-                </div>
-                <FormControl>
-                  <Input
-                    {...field}
-                    disabled={isPending}
-                    placeholder="********"
-                    type="password"
-                    className="placeholder:text-neutral-400"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+            <FormField
+              control={form.control}
+              name="password"
+              render={({ field }) => (
+                <FormItem>
+                  <div className="flex items-center justify-between">
+                    <FormLabel className="text-sm font-medium">Password</FormLabel>
+                    <Button variant="link" size="sm" asChild className="p-0">
+                      <Link href="/auth/forgot-password" className="text-sm text-emerald-600 hover:text-emerald-700">Forgot Password</Link>
+                    </Button>
+                  </div>
+                  <FormControl>
+                    <div className="relative">
+                      <Input
+                        {...field}
+                        disabled={isPending}
+                        placeholder="Enter your password"
+                        type={showPassword ? "text" : "password"}
+                        className="h-12 pr-10"
+                      />
+                      <button
+                        type="button"
+                        onClick={togglePasswordVisibility}
+                        className="absolute right-3 top-1/2 transform -translate-y-1/2"
+                        tabIndex={-1}
+                      >
+                        {showPassword ? (
+                          <EyeOff className="h-5 w-5 text-gray-500" />
+                        ) : (
+                          <Eye className="h-5 w-5 text-gray-500" />
+                        )}
+                      </button>
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          {errorMessage && <FormError message={errorMessage} />}
-          {successMessage && <FormSuccess message={successMessage} />}
+            {errorMessage && <FormError message={errorMessage} />}
+            {successMessage && <FormSuccess message={successMessage} />}
 
-          <Button
-            variant="default"
-            size="lg"
-            disabled={isPending}
-            type="submit"
-            className="w-full disabled:cursor-not-allowed"
-          >
-            Submit
-          </Button>
-        </form>
-      </Form>
-    </CardWrapper>
+            <Button
+              variant="default"
+              disabled={isPending}
+              type="submit"
+              className="w-full h-12 mt-6 bg-emerald-600 hover:bg-emerald-700"
+            >
+              Login
+            </Button>
+          </form>
+        </Form>
+      </CardWrapper>
+    </div>
   );
 };
 

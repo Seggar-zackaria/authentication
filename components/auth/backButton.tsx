@@ -1,6 +1,5 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
 interface BackButtonProps {
@@ -10,8 +9,16 @@ interface BackButtonProps {
 
 export const BackButton = ({ label, href }: BackButtonProps) => {
   return (
-    <Button variant="link" className="w-full text-center" size={"sm"} asChild>
-      <Link href={href}>{label}</Link>
-    </Button>
+    <div className="w-full text-center mt-4">
+      <span className="text-sm text-gray-600">
+        {label.split("?")[0]}?{" "}
+        <Link 
+          href={href}
+          className="text-emerald-600 font-medium hover:underline"
+        >
+          {label.includes("account") ? "Sign up" : "Login"}
+        </Link>
+      </span>
+    </div>
   );
 };

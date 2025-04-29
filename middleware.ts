@@ -2,14 +2,13 @@ import { authConfig } from "@/auth.config";
 import NextAuth from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from '@/auth'
-import { Permission } from "@/lib/types/permissions";
 
 export default NextAuth(authConfig).auth;
 
-const protectedRoutes = {
-  '/admin': [Permission.MANAGE_INVENTORY],
-  '/bookings/manage': [Permission.MANAGE_INVENTORY],
-} as const
+const protectedRoutes: Record<string, string[]> = {
+  '/admin': ['admin'],
+  '/bookings/manage': ['admin'],
+}
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
@@ -18,22 +17,20 @@ export async function middleware(request: NextRequest) {
   const userRole = session?.user?.role
 
   if (userRole) {
-    request.cookies.set('user_permission', userRole.toString())
+    request.cookies.set('user_role', userRole.toString())
   }
-  const userPermissions = request.cookies.get('user_permissions')?.value
+  const userRole2 = request.cookies.get('user_role')?.value
   
-  const requiredPermissions = Object.entries(protectedRoutes).find(([route]) => 
+  const requiredRoles = Object.entries(protectedRoutes).find(([route]) => 
     pathname.startsWith(route)
   )?.[1]
 
-  if (requiredPermissions) {
-    if (!userPermissions) {
+  if (requiredRoles) {
+    if (!userRole2) {
       return NextResponse.redirect(new URL('/login', request.url))
     }
 
-    const hasAccess = requiredPermissions.every(permission => 
-      userPermissions.includes(permission)
-    )
+    const hasAccess = requiredRoles.includes(userRole2)
 
     if (!hasAccess) {
       return NextResponse.redirect(new URL('/unauthorized', request.url))
